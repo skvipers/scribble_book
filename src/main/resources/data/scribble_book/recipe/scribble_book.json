@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "B",
+    "F",
+    "I"
+  ],
+  "key": {
+    "B": "minecraft:book",
+    "F": "minecraft:feather",
+    "I": "scribble_book:ink"
+  },
+  "result": {
+    "id": "scribble_book:scribble_book"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "item.scribble_book.scribble_book": "Scribble Book",
+  "item.scribble_book.ink": "Ink Bottle",
+  "item.scribble_book.ink_bottle": "Empty Ink Bottle",
+
+  "enchantment.scribble_book.soulbound": "Soulbound",
+
+  "scribble_book.screen.title": "Scribble Book",
+
+  "scribble_book.studied": "Studied: %s",
+  "scribble_book.already_studied": "You've already studied this thoroughly.",
+  "scribble_book.no_entry": "Nothing worth noting here.",
+  "scribble_book.no_resources": "You need more ink and paper.",
+
+  "scribble_book.guide.title": "Scribble Book",
+  "scribble_book.guide.text": "This book lets you record observations about blocks in the world.\n\nTo study a block, hold the book and press Shift + Right-Click on it. The first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units. Refill it by crafting: empty bottle + 2 ink sacs.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.",
+
+  "scribble_book.entry.minecraft.furnace.title": "Furnace",
+  "scribble_book.entry.minecraft.furnace.basic": "A furnace converts raw materials into refined goods using fuel. Place fuel in the bottom slot and the item to smelt in the top.",
+  "scribble_book.entry.minecraft.furnace.deep": "Coal smelts 8 items, a bucket of lava smelts 100. Hoppers can automate both input and output slots.",
+
+  "scribble_book.entry.minecraft.crafting_table.title": "Crafting Table",
+  "scribble_book.entry.minecraft.crafting_table.basic": "A crafting table provides a 3\u00d73 crafting grid, allowing you to craft most items in the game.",
+  "scribble_book.entry.minecraft.crafting_table.deep": "The crafting grid does not preserve its contents when the inventory is closed. Shift-clicking moves crafted items directly to inventory.",
+
+  "scribble_book.entry.minecraft.anvil.title": "Anvil",
+  "scribble_book.entry.minecraft.anvil.basic": "Repairs items and applies enchantments from books using experience levels. Has three damage stages — each use has a 12% chance to degrade it by one stage.",
+  "scribble_book.entry.minecraft.anvil.deep": "Combining two items of the same type merges their enchantments and averages durability. Operations become more expensive with each prior use of the item (the Too Expensive limit is 40 levels). Renaming any item costs 1 level regardless of prior work.",
+
+  "scribble_book.entry.minecraft.campfire.title": "Campfire",
+  "scribble_book.entry.minecraft.campfire.basic": "Cooks up to 4 items simultaneously without consuming fuel. Takes 30 seconds per item. Can be extinguished with a shovel or water, and re-lit with flint and steel.",
+  "scribble_book.entry.minecraft.campfire.deep": "Placing a hay bale underneath amplifies the smoke signal to 24 blocks high, visible from far away. Soul campfire deals extra damage to undead mobs. Neither variant requires fuel, making them ideal for passive cooking setups.",
+
+  "scribble_book.entry.minecraft.brewing_stand.title": "Brewing Stand",
+  "scribble_book.entry.minecraft.brewing_stand.basic": "Brews potions from water bottles, ingredients, and blaze powder as fuel. Holds up to 3 bottles at once. Each batch of blaze powder provides 20 brewing operations.",
+  "scribble_book.entry.minecraft.brewing_stand.deep": "Nether wart is the base ingredient for most potions. Glowstone dust increases potion strength, redstone extends duration. Fermented spider eye inverts or corrupts effects. Gunpowder converts potions to splash; dragon's breath converts them to lingering.",
+
+  "scribble_book.entry.minecraft.enchanting_table.title": "Enchanting Table",
+  "scribble_book.entry.minecraft.enchanting_table.basic": "Enchants tools, armor, and books using experience levels and lapis lazuli. Offers three options at a time. Higher-tier enchantments require bookshelves placed nearby.",
+  "scribble_book.entry.minecraft.enchanting_table.deep": "Maximum power requires exactly 15 bookshelves within a 5x5 area, each separated by one air block. The enchantment list refreshes after each use or world reload. The top offer always costs the maximum available level.",
+
+  "scribble_book.entry.minecraft.chest.title": "Chest",
+  "scribble_book.entry.minecraft.chest.basic": "Stores up to 27 item stacks. Place two chests side by side to form a large chest with 54 slots. Cannot be opened with a solid block or a cat on top.",
+  "scribble_book.entry.minecraft.chest.deep": "Trapped chests emit a redstone signal proportional to the number of players viewing them. Ender chests provide a personal 27-slot inventory shared across all ender chest instances, per player.",
+
+  "scribble_book.entry.minecraft.hopper.title": "Hopper",
+  "scribble_book.entry.minecraft.hopper.basic": "Automatically moves items into and out of adjacent containers. Points toward the container it faced when placed. Can be disabled with a redstone signal.",
+  "scribble_book.entry.minecraft.hopper.deep": "Transfers one item every 8 game ticks (0.4 seconds). Inserting into the top of a furnace feeds ingredients; into the side feeds fuel; below the furnace collects output. Hoppers also collect item entities falling into them from above.",
+
+  "scribble_book.entry.minecraft.grindstone.title": "Grindstone",
+  "scribble_book.entry.minecraft.grindstone.basic": "Repairs items by combining two of the same type, removing all enchantments in the process. Returns some experience for the stripped enchantments.",
+  "scribble_book.entry.minecraft.grindstone.deep": "Cannot remove curses such as Curse of Binding or Curse of Vanishing. Yields roughly 1 XP per enchantment level removed. More efficient than an anvil when you only need to repair without preserving enchantments.",
+
+  "scribble_book.entry.minecraft.smithing_table.title": "Smithing Table",
+  "scribble_book.entry.minecraft.smithing_table.basic": "Upgrades diamond equipment to netherite using a Netherite Upgrade template and a netherite ingot. Preserves all existing enchantments.",
+  "scribble_book.entry.minecraft.smithing_table.deep": "Armor trims can be applied using smithing templates and various material ingots, changing appearance without affecting stats. Templates are consumed on use but can be duplicated using 7 diamonds and a block of the template's material.",
+
+  "scribble_book.entry.minecraft.composter.title": "Composter",
+  "scribble_book.entry.minecraft.composter.basic": "Converts organic items into bone meal. Fill it to 7 layers to produce one bone meal. Different items have different composting chances ranging from 10% to 100%.",
+  "scribble_book.entry.minecraft.composter.deep": "High-efficiency items include pumpkin pie (100%) and melons (50%). A full composter turns bright green — the bone meal is ready to collect. Hoppers can automate both input and output.",
+
+  "scribble_book.entry.minecraft.beacon.title": "Beacon",
+  "scribble_book.entry.minecraft.beacon.basic": "Projects a beam of light skyward and grants status effects to nearby players. Requires a pyramid of mineral blocks (iron, gold, diamond, or netherite) beneath it.",
+  "scribble_book.entry.minecraft.beacon.deep": "Tier 1 (3x3): Speed or Haste. Tier 2 (5x5): adds Resistance or Jump Boost. Tier 3 (7x7): adds Strength. Tier 4 (9x9): adds Regeneration and unlocks a secondary effect. Effect radius scales from 20 to 50 blocks with pyramid tier.",
+
+  "scribble_book.entry.minecraft.cauldron.title": "Cauldron",
+  "scribble_book.entry.minecraft.cauldron.basic": "Holds water, lava, or powder snow. Water cauldrons can clean banners and leather armor, fill bottles, and are slowly filled by rain.",
+  "scribble_book.entry.minecraft.cauldron.deep": "Adding dye to a water cauldron allows dyeing leather armor directly without a crafting table. In the Nether, a lava cauldron lets you fill fire resistance potions indirectly and is the only way to place a liquid source block there.",
+
+  "scribble_book.entry.minecraft.stonecutter.title": "Stonecutter",
+  "scribble_book.entry.minecraft.stonecutter.basic": "Cuts stone-type blocks into slabs, stairs, walls, and other decorative variants. More material-efficient than crafting for stairs and some other shapes.",
+  "scribble_book.entry.minecraft.stonecutter.deep": "Produces 1 stair per 1 block (crafting yields 4 stairs from 6 blocks, wasting material). Some chiseled and polished variants are only obtainable via stonecutter. Can cut raw stone directly into polished or brick forms in one step.",
+
+  "scribble_book.entry.minecraft.cartography_table.title": "Cartography Table",
+  "scribble_book.entry.minecraft.cartography_table.basic": "Zooms out, clones, or locks maps. Zooming out expands the map's coverage area. Locking a map with a glass pane prevents it from updating as the world changes.",
+  "scribble_book.entry.minecraft.cartography_table.deep": "Each zoom level doubles the map scale (up to level 4). A locked map can be safely copied and shared without risk of overwriting. Cloning requires an empty map and produces an identical copy.",
+
+  "scribble_book.entry.minecraft.smoker.title": "Smoker",
+  "scribble_book.entry.minecraft.smoker.basic": "Cooks food items twice as fast as a regular furnace using the same fuels. Only works with food — other items cannot be smelted in it.",
+  "scribble_book.entry.minecraft.smoker.deep": "Burns fuel at double the rate to achieve double the speed, so fuel efficiency is identical to a furnace. Hoppers can automate input and output slots the same way as with a furnace.",
+
+  "scribble_book.entry.minecraft.loom.title": "Loom",
+  "scribble_book.entry.minecraft.loom.basic": "Applies patterns to banners using dyes and optional banner pattern items. Much easier to use than the crafting table method, with a visual preview before applying.",
+  "scribble_book.entry.minecraft.loom.deep": "Banners can hold up to 6 pattern layers. Some patterns (like Skull, Flower, Thing) require special banner pattern items. Patterns cannot be removed once applied — only overwritten layer by layer.",
+
+  "scribble_book.entry.minecraft.blast_furnace.title": "Blast Furnace",
+  "scribble_book.entry.minecraft.blast_furnace.basic": "Smelts ores, raw metals, and metal armor or tools twice as fast as a regular furnace. Cannot smelt food or other non-metal items.",
+  "scribble_book.entry.minecraft.blast_furnace.deep": "Burns fuel at double the rate to achieve double speed, so fuel efficiency equals that of a regular furnace. Hoppers can automate all slots. Useful for processing large quantities of ore quickly.",
+
+  "scribble_book.entry.minecraft.note_block.title": "Note Block",
+  "scribble_book.entry.minecraft.note_block.basic": "Plays a musical note when powered by redstone or right-clicked. The pitch cycles through 25 notes across two octaves. The block beneath it determines the instrument.",
+  "scribble_book.entry.minecraft.note_block.deep": "Instrument depends on the block below: wood = bass, sand/gravel = snare, glass = clicks, stone = bass drum, gold = bell, clay = flute, packed ice = chime, bone block = xylophone, iron block = iron xylophone, soul sand = cowbell, pumpkin = didgeridoo, emerald block = bit, hay bale = banjo, glowstone = pling, air/other = harp.",
+
+  "scribble_book.entry.minecraft.jukebox.title": "Jukebox",
+  "scribble_book.entry.minecraft.jukebox.basic": "Plays music discs when one is inserted. Right-click to insert a disc, right-click again or use a hopper below to eject it. Audible up to 65 blocks away.",
+  "scribble_book.entry.minecraft.jukebox.deep": "Emits a comparator signal whose strength corresponds to the disc inserted (1–15). A hopper below the jukebox automatically ejects the disc when playback ends. Parrots nearby will dance while music plays."
+}

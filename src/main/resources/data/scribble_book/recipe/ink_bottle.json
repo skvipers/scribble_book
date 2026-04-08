@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "P P",
+    " P "
+  ],
+  "key": {
+    "P": "minecraft:glass_pane"
+  },
+  "result": {
+    "id": "scribble_book:ink_bottle",
+    "count": 1
+  }
+}

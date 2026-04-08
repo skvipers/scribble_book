@@ -1,0 +1,25 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ink": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": "scribble_book:ink" }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "scribble_book:scribble_book"
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_recipe", "has_ink" ]
+  ],
+  "rewards": {
+    "recipes": [ "scribble_book:scribble_book" ]
+  }
+}

@@ -1,0 +1,40 @@
+# === Build output ===
+build/
+out/
+
+# === Gradle cache ===
+.gradle/
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# === Minecraft run directories ===
+run/
+logs/
+crash-reports/
+saves/
+resourcepacks/
+screenshots/
+
+# === NeoForge / FML caches ===
+mods/
+
+# === Claude Code ===
+.claude/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Java compiled output ===
+*.class
+
+# Keep Gradle wrapper (needed to build without local Gradle install)
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
