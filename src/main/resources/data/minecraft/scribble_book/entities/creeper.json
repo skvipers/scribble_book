@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.creeper.title",
+  "basic": "scribble_book.entity.minecraft.creeper.basic",
+  "deep":  "scribble_book.entity.minecraft.creeper.deep",
+  "sneak_only": true
+}

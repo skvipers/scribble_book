@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.bee.title",
+  "basic": "scribble_book.entity.minecraft.bee.basic",
+  "deep":  "scribble_book.entity.minecraft.bee.deep",
+  "sneak_only": false
+}

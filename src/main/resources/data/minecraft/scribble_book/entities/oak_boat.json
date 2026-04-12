@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.oak_boat.title",
+  "basic": "scribble_book.entity.minecraft.oak_boat.basic",
+  "deep":  "scribble_book.entity.minecraft.oak_boat.deep",
+  "sneak_only": false
+}

@@ -12,6 +12,19 @@
   "scribble_book.no_entry": "Nothing worth noting here.",
   "scribble_book.no_resources": "You need more ink and paper.",
 
+  "scribble_book.progress.label": "Knowledge progress",
+
+  "advancements.scribble_book.root.title": "Scribble Book",
+  "advancements.scribble_book.root.description": "Recording observations about the world",
+  "advancements.scribble_book.thirst_for_knowledge.title": "Thirst for Knowledge",
+  "advancements.scribble_book.thirst_for_knowledge.description": "Study 10 entries in your Scribble Book",
+  "advancements.scribble_book.forty_two.title": "42",
+  "advancements.scribble_book.forty_two.description": "Deep Thought has finished its calculation. The Answer to the Ultimate Question of Life, the Universe, and Everything.",
+
+  "scribble_book.command.no_book": "No Scribble Book found in your inventory.",
+  "scribble_book.command.missing": "First unstudied: %s",
+  "scribble_book.command.complete": "Your Scribble Book is 100%% complete!",
+
   "scribble_book.guide.title": "Scribble Book",
   "scribble_book.guide.text": "This book lets you record observations about blocks in the world.\n\nTo study a block, hold the book and press Shift + Right-Click on it. The first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units. Refill it by crafting: empty bottle + 2 ink sacs.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.",
 
@@ -93,5 +106,203 @@
 
   "scribble_book.entry.minecraft.jukebox.title": "Jukebox",
   "scribble_book.entry.minecraft.jukebox.basic": "Plays music discs when one is inserted. Right-click to insert a disc, right-click again or use a hopper below to eject it. Audible up to 65 blocks away.",
-  "scribble_book.entry.minecraft.jukebox.deep": "Emits a comparator signal whose strength corresponds to the disc inserted (1–15). A hopper below the jukebox automatically ejects the disc when playback ends. Parrots nearby will dance while music plays."
+  "scribble_book.entry.minecraft.jukebox.deep": "Emits a comparator signal whose strength corresponds to the disc inserted (1–15). A hopper below the jukebox automatically ejects the disc when playback ends. Parrots nearby will dance while music plays.",
+
+  "scribble_book.entry.minecraft.barrel.title": "Barrel",
+  "scribble_book.entry.minecraft.barrel.basic": "A barrel stores up to 27 item stacks, just like a chest. Unlike a chest, it can be opened even with a solid block placed directly on top, and it does not require a second block to form a large container.",
+  "scribble_book.entry.minecraft.barrel.deep": "Barrels function as a job site block for fishermen villagers. A comparator placed against a barrel outputs a signal proportional to how full it is (0–15). They are also flammable, unlike chests made of some materials.",
+
+  "scribble_book.entry.minecraft.shulker_box.title": "Shulker Box",
+  "scribble_book.entry.minecraft.shulker_box.basic": "A shulker box holds up to 27 item stacks and keeps its contents when broken, making it a portable container. Right-click to open, break to pick it up with items inside.",
+  "scribble_book.entry.minecraft.shulker_box.deep": "Shulker boxes cannot be placed inside other shulker boxes. They can be dyed in any of the 16 colors. A comparator measures fill level. Items inside do not count toward the player's inventory weight — a shulker box full of items is a single stack.",
+
+  "scribble_book.entry.minecraft.chiseled_bookshelf.title": "Chiseled Bookshelf",
+  "scribble_book.entry.minecraft.chiseled_bookshelf.basic": "Stores up to 6 books, written books, book and quills, or enchanted books. Each slot is individually accessible — right-click a slot to insert or remove a book.",
+  "scribble_book.entry.minecraft.chiseled_bookshelf.deep": "A comparator connected to a chiseled bookshelf outputs a signal based on the last slot that was interacted with (1–6). This allows redstone circuits to detect which slot was accessed. Works as a bookshelf for powering nearby enchanting tables.",
+
+  "scribble_book.entry.minecraft.dispenser.title": "Dispenser",
+  "scribble_book.entry.minecraft.dispenser.basic": "When triggered by a redstone signal, a dispenser ejects one random item from its 9-slot inventory. Many items are activated rather than dropped — arrows are shot, buckets place liquids, flint and steel lights fires.",
+  "scribble_book.entry.minecraft.dispenser.deep": "Dispensers can place blocks, fill and empty cauldrons, equip armor onto players or mobs, shear sheep, milk cows, and ignite TNT. They face the direction you're looking when placed. A comparator measures fill level.",
+
+  "scribble_book.entry.minecraft.dropper.title": "Dropper",
+  "scribble_book.entry.minecraft.dropper.basic": "When triggered by a redstone signal, a dropper ejects one random item from its 9-slot inventory. Unlike a dispenser, it always drops items as entities — it never activates them. Can also push items into adjacent containers when facing them.",
+  "scribble_book.entry.minecraft.dropper.deep": "Droppers are essential in item-sorting and item-transport circuits. Pointing a dropper directly into a container (chest, hopper, furnace) inserts the item instead of dropping it. A comparator measures fill level. They cannot be triggered by adjacent hoppers without a pulse.",
+
+  "scribble_book.entry.minecraft.bed.title": "Bed",
+  "scribble_book.entry.minecraft.bed.basic": "Sleeping in a bed sets your spawn point and skips the night (or a thunderstorm) if all players on the server are in bed. Beds come in 16 colors but share the same function.",
+  "scribble_book.entry.minecraft.bed.deep": "In the Nether or The End, attempting to sleep causes the bed to explode — larger than TNT. This can be exploited for mining. Beds are two blocks wide; the spawn anchor is placed at the head block. If your spawn is obstructed when you die, you respawn at the world spawn instead.",
+
+  "scribble_book.entry.minecraft.respawn_anchor.title": "Respawn Anchor",
+  "scribble_book.entry.minecraft.respawn_anchor.basic": "Sets your spawn point in the Nether. Requires charging with glowstone — up to 4 charges. Each death consumes one charge. Right-click to charge, right-click again to set spawn.",
+  "scribble_book.entry.minecraft.respawn_anchor.deep": "Attempting to sleep in a bed in the Nether causes an explosion; the respawn anchor is the safe alternative. Using a respawn anchor in the Overworld or The End causes it to explode. Charges can be topped up without losing the set spawn point.",
+
+  "scribble_book.entry.minecraft.lectern.title": "Lectern",
+  "scribble_book.entry.minecraft.lectern.basic": "Holds a written book so multiple players can read it simultaneously. Right-click to place a book, right-click again to read. The book can be retrieved by right-clicking while sneaking.",
+  "scribble_book.entry.minecraft.lectern.deep": "Turning pages in a book on a lectern emits a redstone pulse. The comparator signal strength corresponds to the current page divided by total pages (0–15). Lecterns are the job site block for librarian villagers.",
+
+  "scribble_book.entry.minecraft.conduit.title": "Conduit",
+  "scribble_book.entry.minecraft.conduit.basic": "When activated, a conduit grants Conduit Power to nearby players — a combined effect of Water Breathing, Night Vision, and Haste while underwater. It also attacks hostile mobs within range.",
+  "scribble_book.entry.minecraft.conduit.deep": "Activation requires surrounding the conduit with a frame of prismarine, dark prismarine, prismarine bricks, or sea lanterns — minimum 16 blocks for partial activation, 42 blocks for full range (96 blocks). The conduit must be placed in or near water. It damages hostile mobs within 8 blocks every 2 seconds.",
+
+  "scribble_book.entry.minecraft.bell.title": "Bell",
+  "scribble_book.entry.minecraft.bell.basic": "Ringing a bell causes all nearby villagers to scatter to their homes and makes any raiders within the village glow. Can be rung by hitting it, using a redstone signal, or a projectile.",
+  "scribble_book.entry.minecraft.bell.deep": "The bell is the centerpiece of a village and defines the village boundary for raids. Ringing it during a raid highlights all raid mobs within 48 blocks with a glowing outline visible through walls. It emits a redstone pulse when rung.",
+
+  "scribble_book.entry.minecraft.lodestone.title": "Lodestone",
+  "scribble_book.entry.minecraft.lodestone.basic": "Right-clicking a lodestone with a compass links the compass to that lodestone. The compass will then point to the lodestone regardless of dimension, as long as the lodestone still exists.",
+  "scribble_book.entry.minecraft.lodestone.deep": "Lodestone compasses work across dimensions — you can set one in the Nether and track it from the Overworld. If the lodestone is destroyed, the compass spins aimlessly. Lodestones are crafted with a netherite ingot surrounded by chiseled stone bricks.",
+
+  "scribble_book.entry.minecraft.piston.title": "Piston",
+  "scribble_book.entry.minecraft.piston.basic": "Pistons extend one block when powered by a redstone signal, pushing up to 12 blocks in a chain. A sticky piston also pulls the adjacent block back when it retracts. They face the direction you look when placed.",
+  "scribble_book.entry.minecraft.piston.deep": "Pistons cannot push block entities (chests, furnaces, etc.) or obsidian. Slime and honey blocks form moving structures — attaching multiple pistons can create flying machines. A piston extending or retracting takes 2 game ticks (0.1 s); this delay can be used in timing circuits.",
+
+  "scribble_book.entry.minecraft.observer.title": "Observer",
+  "scribble_book.entry.minecraft.observer.basic": "An observer emits a short redstone pulse when the block it faces changes state. It detects block placements, removals, and state changes (crop growth, door opening, fluid flow). The pulse lasts 2 game ticks.",
+  "scribble_book.entry.minecraft.observer.deep": "Observers can detect each other, creating a rapid clock when two face each other — useful for fast automation. They detect only the block directly in front, not adjacent blocks. Facing direction matters: the face with the red dot is the output side.",
+
+  "scribble_book.entry.minecraft.comparator.title": "Redstone Comparator",
+  "scribble_book.entry.minecraft.comparator.basic": "A comparator has two modes. In comparison mode (default) it outputs the rear signal minus the strongest side signal, flooring at 0. In subtraction mode (click to toggle, front light on) it subtracts the side signal from the rear.",
+  "scribble_book.entry.minecraft.comparator.deep": "Comparators can measure the fill level of containers (chests, furnaces, brewing stands, etc.) and output a signal from 0 to 15. They also read jukebox discs, lectern pages, cake bites, and beehive honey level. Essential for item-counting and sorting systems.",
+
+  "scribble_book.entry.minecraft.repeater.title": "Redstone Repeater",
+  "scribble_book.entry.minecraft.repeater.basic": "A repeater boosts a redstone signal back to full strength and introduces a delay of 1–4 ticks (0.1–0.4 s), set by right-clicking. It only transmits signals in one direction.",
+  "scribble_book.entry.minecraft.repeater.deep": "Repeaters can be locked: a signal from the side freezes the output at its current state, ignoring changes on the input. This is used to store a single bit of data. A repeater also acts as a diode, preventing signal from travelling backwards.",
+
+  "scribble_book.entry.minecraft.daylight_detector.title": "Daylight Detector",
+  "scribble_book.entry.minecraft.daylight_detector.basic": "Outputs a redstone signal proportional to the sky light level above it. Stronger during daytime (up to 15), zero at night. Right-clicking inverts it to output a signal at night instead.",
+  "scribble_book.entry.minecraft.daylight_detector.deep": "The signal strength follows the angle of the sun — it peaks at noon and drops toward sunrise/sunset, making it useful for analog time-reading circuits. In inverted mode it outputs 0 during the day and up to 15 at night. Rain and being underground both reduce the signal.",
+
+  "scribble_book.entry.minecraft.target.title": "Target",
+  "scribble_book.entry.minecraft.target.basic": "Emits a redstone pulse when hit by a projectile. The signal strength (1–15) depends on how close to the center the projectile lands. A direct bull's-eye gives the maximum signal of 15.",
+  "scribble_book.entry.minecraft.target.deep": "The pulse duration is 20 ticks (1 s) for most projectiles and 4 ticks for arrows from a dispenser. Targets can be activated by tridents, snowballs, eggs, and fishing rods as well as arrows. Useful for building games, puzzles, and skill-based redstone triggers.",
+
+  "scribble_book.entry.minecraft.sculk_sensor.title": "Sculk Sensor",
+  "scribble_book.entry.minecraft.sculk_sensor.basic": "Detects vibrations within 8 blocks and converts them into a redstone signal. Almost any player or mob action produces a vibration — walking, breaking blocks, opening containers, landing after a fall. Wool blocks silence vibrations.",
+  "scribble_book.entry.minecraft.sculk_sensor.deep": "The output signal strength (1–15) corresponds to the type of vibration detected, not its distance. After triggering, the sensor has a 1-second cooldown. It also emits light level 1 while active. Placing wool between the sensor and the source blocks the vibration.",
+
+  "scribble_book.entry.minecraft.calibrated_sculk_sensor.title": "Calibrated Sculk Sensor",
+  "scribble_book.entry.minecraft.calibrated_sculk_sensor.basic": "Works like a sculk sensor but only responds to one specific type of vibration, selected by the redstone signal strength fed into its side input. Signal strength 1–15 maps to different vibration categories.",
+  "scribble_book.entry.minecraft.calibrated_sculk_sensor.deep": "The side input acts as a filter: strength 1 = movement, 2 = landing, 3 = projectile, 4 = item interactions, and so on up to 15. This allows precise event detection without reacting to noise. The detection radius is 16 blocks — twice that of a regular sculk sensor.",
+
+  "scribble_book.entry.minecraft.crafter.title": "Crafter",
+  "scribble_book.entry.minecraft.crafter.basic": "Automatically crafts items when it receives a redstone pulse. The 3×3 grid can be configured manually; slots can be disabled to force empty spaces in the recipe. Outputs the crafted item through its front face.",
+  "scribble_book.entry.minecraft.crafter.deep": "Hoppers can fill the crafter's slots, enabling fully automated crafting lines. Disabled slots are never filled by hoppers. The crafter only fires when powered by a new rising edge — a constant signal does nothing. A comparator reads 0 when the crafter is ready and 15 when it has crafted but the output is blocked.",
+
+  "scribble_book.entry.minecraft.redstone_lamp.title": "Redstone Lamp",
+  "scribble_book.entry.minecraft.redstone_lamp.basic": "A redstone lamp emits light level 15 — the same as glowstone — when powered by a redstone signal. It turns off when the signal stops. Can be powered directly or through adjacent powered blocks.",
+  "scribble_book.entry.minecraft.redstone_lamp.deep": "There is a 2-tick delay between losing power and turning off, which can cause brief flickers in fast circuits. Lamps are commonly used with daylight detectors for automatic street lighting. Unlike torches, they do not melt snow or ice.",
+
+  "scribble_book.entry.minecraft.rail.title": "Rail",
+  "scribble_book.entry.minecraft.rail.basic": "Rails are the tracks minecarts travel along. They connect automatically to adjacent rails and can be placed on flat ground or slopes of up to one block. Curves form at junctions — a straight rail placed next to two perpendicular rails curves to connect them.",
+  "scribble_book.entry.minecraft.rail.deep": "At a T- or +-junction, the rail defaults to a straight path. Powering the block beneath a junction rail with redstone switches it between its two possible straight orientations — useful for switchable junctions. Rails placed on slopes allow minecarts to gain speed going downhill.",
+
+  "scribble_book.entry.minecraft.powered_rail.title": "Powered Rail",
+  "scribble_book.entry.minecraft.powered_rail.basic": "Powered rails accelerate minecarts when powered by a redstone signal, and brake them to a stop when unpowered. A single powered rail can accelerate a minecart to 8 m/s. Without a signal it acts as a brake, stopping any cart that rolls over it.",
+  "scribble_book.entry.minecraft.powered_rail.deep": "One powered rail every 32 flat blocks maintains maximum speed. On slopes, one every 8 blocks is needed. A powered rail next to a solid block on an unpowered section acts as a launch point — a stationary minecart placed there will be pushed when the rail is activated. Redstone signal propagates along up to 9 adjacent powered rails.",
+
+  "scribble_book.entry.minecraft.detector_rail.title": "Detector Rail",
+  "scribble_book.entry.minecraft.detector_rail.basic": "A detector rail emits a redstone signal of strength 15 whenever a minecart passes over it. The signal lasts as long as the minecart is on the rail. Can power adjacent blocks and activate nearby powered rails.",
+  "scribble_book.entry.minecraft.detector_rail.deep": "A comparator next to a detector rail outputs a signal proportional to the fill level of a chest or hopper minecart passing over it (0–15). This allows automated systems to check cargo before routing. Detector rails are commonly used to trigger gates, doors, or unloading stations.",
+
+  "scribble_book.entry.minecraft.activator_rail.title": "Activator Rail",
+  "scribble_book.entry.minecraft.activator_rail.basic": "An activator rail triggers special behaviour in minecarts that pass over it when powered. It ejects passengers from regular minecarts, detonates TNT minecarts, activates furnace minecarts, and toggles hopper minecarts on or off.",
+  "scribble_book.entry.minecraft.activator_rail.deep": "Hopper minecarts are disabled (stop collecting and depositing) when passing over a powered activator rail, and re-enabled on an unpowered one. This allows precise control over when a hopper cart unloads. TNT minecarts detonate immediately on contact with a powered activator rail regardless of speed.",
+
+  "scribble_book.entry.minecraft.redstone_torch.title": "Redstone Torch",
+  "scribble_book.entry.minecraft.redstone_torch.basic": "A redstone torch constantly emits a signal of strength 15 and acts as a power source. It turns off when the block it is attached to receives a redstone signal — making it a NOT gate (inverter). Placed on top of a block, it powers adjacent blocks and the block above. Placed on the side, it additionally powers the block it faces outward from.",
+  "scribble_book.entry.minecraft.redstone_torch.deep": "A torch on the side of a block does not power that block itself — it powers the block above and the blocks to its sides. This distinction matters when building compact circuits. If a torch switches on and off more than 8 times within 60 ticks it burns out and stays dark until the rapid signal stops. Stacking inverters vertically (torch tower) is a classic way to extend a signal upward without a repeater.",
+
+  "scribble_book.entry.minecraft.tnt.title": "TNT",
+  "scribble_book.entry.minecraft.tnt.basic": "TNT is primed by a redstone signal, fire, flint and steel, or a burning projectile. Once primed it bounces as an entity for 4 seconds before exploding with a blast radius of about 4 blocks, destroying nearby blocks and damaging entities.",
+  "scribble_book.entry.minecraft.tnt.deep": "The explosion drops roughly 30% of destroyed blocks as items. TNT launched from a dispenser lands as a primed entity immediately. In water, TNT explodes but does not destroy blocks. Stacking multiple TNT entities at one point multiplies destruction. Beds in the Nether and End cause a similar but larger explosion.",
+
+  "scribble_book.entity.minecraft.oak_boat.title": "Boat",
+  "scribble_book.entity.minecraft.oak_boat.basic": "Boats travel on water and can carry two passengers. Right-click to mount, sneak to dismount. All wood types behave identically — only appearance differs. Bamboo rafts have the same function but a distinct look.",
+  "scribble_book.entity.minecraft.oak_boat.deep": "Boats take no fall damage when landing on water. They move slowly against currents and stop instantly on land. A boat on ice moves extremely fast. Boats can be broken by hitting them repeatedly or with a sword — they drop themselves as an item.",
+
+  "scribble_book.entity.minecraft.oak_chest_boat.title": "Chest Boat",
+  "scribble_book.entity.minecraft.oak_chest_boat.basic": "A chest boat combines a boat with a 27-slot inventory. A player can ride it and access the chest simultaneously. Right-click to mount; sneak and right-click to open the chest without mounting.",
+  "scribble_book.entity.minecraft.oak_chest_boat.deep": "Chest boats are ideal for transporting large amounts of items across water. The inventory persists if the boat is broken — it drops as a chest boat item. Hoppers cannot interact with a chest boat's inventory directly.",
+
+  "scribble_book.entity.minecraft.minecart.title": "Minecart",
+  "scribble_book.entity.minecraft.minecart.basic": "Minecarts travel along rails and can carry one passenger. Right-click to mount, sneak to dismount. They accelerate on powered rails and stop on unpowered ones. Push a minecart off a rail to drop it as an item.",
+  "scribble_book.entity.minecraft.minecart.deep": "A powered rail with a redstone signal accelerates minecarts up to 8 m/s. Detector rails emit a signal when a minecart passes over them. Activator rails trigger special minecart types and eject passengers. Minecarts on slopes gain speed from gravity.",
+
+  "scribble_book.entity.minecraft.chest_minecart.title": "Chest Minecart",
+  "scribble_book.entity.minecraft.chest_minecart.basic": "A minecart with a 27-slot chest. Cannot carry passengers. Items can be loaded and unloaded by hoppers placed above or below the rail. Right-click to open the inventory.",
+  "scribble_book.entity.minecraft.chest_minecart.deep": "A hopper above the rail inserts items; a hopper below collects them. A comparator next to a detector rail outputs a signal proportional to fill level when the chest minecart passes over. Useful for automated item transport systems across long distances.",
+
+  "scribble_book.entity.minecraft.furnace_minecart.title": "Furnace Minecart",
+  "scribble_book.entity.minecraft.furnace_minecart.basic": "A self-propelled minecart fuelled by coal or charcoal. Right-click with fuel to power it — it then moves on its own without powered rails, and can push other minecarts.",
+  "scribble_book.entity.minecraft.furnace_minecart.deep": "One piece of coal powers it for about 3 minutes. It moves at roughly half the speed of a powered rail but requires no redstone infrastructure. Can push a chain of regular minecarts. Largely replaced by powered rails in modern builds but useful in simple setups.",
+
+  "scribble_book.entity.minecraft.hopper_minecart.title": "Hopper Minecart",
+  "scribble_book.entity.minecraft.hopper_minecart.basic": "A minecart with a hopper that collects item entities above it as it moves and deposits them into containers below the rail. Picks up items faster than a stationary hopper.",
+  "scribble_book.entity.minecraft.hopper_minecart.deep": "A powered activator rail disables the hopper minecart, stopping collection and transfer. A detector rail emits a signal when it passes, which can be used to trigger loading/unloading. Collects items in a 1-block radius above the cart.",
+
+  "scribble_book.entity.minecraft.tnt_minecart.title": "TNT Minecart",
+  "scribble_book.entity.minecraft.tnt_minecart.basic": "Explodes when it passes over a powered activator rail, takes damage from an explosion nearby, or falls more than 3 blocks onto a hard surface. The explosion is larger than regular TNT.",
+  "scribble_book.entity.minecraft.tnt_minecart.deep": "The explosion power scales with the minecart's speed — a fast-moving cart on a slope creates a much larger blast. Multiple TNT minecarts in a chain detonate in sequence. Used in mining, traps, and large-scale demolition contraptions.",
+
+  "scribble_book.entity.minecraft.armor_stand.title": "Armor Stand",
+  "scribble_book.entity.minecraft.armor_stand.basic": "Displays armor and items. Right-click to place or take equipment. Can hold helmets, chestplates, leggings, boots, and one item in its main hand. Affected by gravity and physics.",
+  "scribble_book.entity.minecraft.armor_stand.deep": "Using commands: /data merge can set poses, make the stand invisible, remove the base plate, or disable gravity. Invisible armor stands with items in hand are a common building trick for floating decorations. Armor stands can be equipped by dispensers. They do not have a player-like hitbox — projectiles pass through them.",
+
+  "scribble_book.entity.minecraft.item_frame.title": "Item Frame",
+  "scribble_book.entity.minecraft.item_frame.basic": "Displays any item on a wall, floor, or ceiling. Right-click to place an item, right-click again to rotate it through 8 positions. Hit to pop the item out. Glow item frames remain visible in complete darkness.",
+  "scribble_book.entity.minecraft.item_frame.deep": "A comparator next to a block with an item frame outputs a signal from 0 to 15 based on the item's rotation (0 = no item, 1–8 = each rotation step). This allows item frames to act as selectors or dials in redstone builds. Maps displayed in frames update in real time.",
+
+  "scribble_book.entity.minecraft.end_crystal.title": "End Crystal",
+  "scribble_book.entity.minecraft.end_crystal.basic": "End crystals sit atop the obsidian pillars in The End and continuously heal the Ender Dragon. Destroying one deals damage to the dragon equal to the healing burst. They explode violently when hit or when the beam is interrupted.",
+  "scribble_book.entity.minecraft.end_crystal.deep": "End crystals can be placed on obsidian or bedrock to respawn the Ender Dragon: place four crystals on top of the exit portal and the dragon will re-emerge. The explosion on destruction is one of the largest in the game. Placing a crystal on the central pillar during a fight prevents the dragon from recharging.",
+
+  "scribble_book.entry.minecraft.pointed_dripstone.title": "Pointed Dripstone",
+  "scribble_book.entry.minecraft.pointed_dripstone.basic": "Pointed dripstone forms stalactites (hanging down) and stalagmites (growing up). A falling stalactite deals significant damage on impact. Grows slowly over time if a dripstone block is above it and water is present. Can be harvested with any pickaxe.",
+  "scribble_book.entry.minecraft.pointed_dripstone.deep": "Stalactites drip into cauldrons below, slowly filling them. Water source above → water in cauldron. Lava source above → lava in cauldron — the only renewable lava in the game. A mud block placed on top of a dripstone block with a stalactite hanging below is slowly dried out and converted into clay — the stalactite draws moisture from the mud and drips it downward. No water source required.",
+
+  "scribble_book.entry.minecraft.cobblestone.title": "Cobblestone",
+  "scribble_book.entry.minecraft.cobblestone.basic": "Cobblestone is produced when flowing lava meets a water source block. It is one of the most common building materials and the basis for many crafting recipes. Mining stone without Silk Touch also yields cobblestone.",
+  "scribble_book.entry.minecraft.cobblestone.deep": "Three distinct lava-water reactions exist. Flowing lava + water source = cobblestone. Flowing water + lava source = stone. Water placed directly on a lava source = obsidian. A classic cobblestone generator exploits the first reaction: keep lava and water separated by one air gap and mine the cobblestone that forms between them — infinite stone without consuming either source.",
+
+  "scribble_book.entity.minecraft.cow.title": "Cow",
+  "scribble_book.entity.minecraft.cow.basic": "Cows are a common passive mob found in grassy biomes. Right-click with an empty hand to milk them — they yield an unlimited supply of milk. Cows drop raw beef and leather on death. Biome variants (cold, warm, etc.) differ only in appearance and behave identically.",
+  "scribble_book.entity.minecraft.cow.deep": "Milk removes all status effects when drunk from a bucket. Cows can be bred with wheat, producing a calf that takes 20 minutes to mature. Leather is the only source of the Book and Quill's cover material and is essential for the first tier of enchanting (Leather armor for enchanting table range counts as bookshelves only when crafted into full sets for trading — books themselves count though).",
+
+  "scribble_book.entity.minecraft.mooshroom.title": "Mooshroom",
+  "scribble_book.entity.minecraft.mooshroom.basic": "Mooshrooms are cow variants found exclusively in mushroom fields biomes. Right-click with a bowl to get mushroom stew — an unlimited food source. Right-click with shears to remove their mushrooms, converting them into a normal cow. Come in red and brown varieties.",
+  "scribble_book.entity.minecraft.mooshroom.deep": "A brown mooshroom can be obtained by striking a red mooshroom with lightning. Right-clicking a brown mooshroom with a flower before milking it produces a suspicious stew with the effect corresponding to that flower. The effect lasts longer than eating the stew crafted normally.",
+
+  "scribble_book.entity.minecraft.villager.title": "Villager",
+  "scribble_book.entity.minecraft.villager.basic": "Villagers trade with players using emeralds. Each villager has a profession determined by their job site block — for example, a lectern makes a librarian. Trades unlock in tiers as you trade more with the same villager.",
+  "scribble_book.entity.minecraft.villager.deep": "Curing a zombie villager with a golden apple grants permanent discounts with that villager. Trading raises your popularity in the village — high popularity causes iron golems to be less aggressive toward you. A villager without a job site block becomes unemployed and cannot trade.",
+
+  "scribble_book.entity.minecraft.phantom.title": "Phantom",
+  "scribble_book.entity.minecraft.phantom.basic": "Phantoms spawn at night if you have not slept for 3 or more in-game days. They dive-bomb the player and can be repelled by cats. They burn in sunlight.",
+  "scribble_book.entity.minecraft.phantom.deep": "Phantom membrane is used to repair elytras in an anvil and to brew the Slow Falling potion. The more nights you skip, the larger the phantom swarm becomes. Sleeping resets the counter immediately.",
+
+  "scribble_book.entity.minecraft.creeper.title": "Creeper",
+  "scribble_book.entity.minecraft.creeper.basic": "Creepers approach silently and detonate after a ~1.5-second fuse. They avoid cats. Their explosion destroys nearby blocks and deals heavy damage to the player.",
+  "scribble_book.entity.minecraft.creeper.deep": "A creeper killed by a skeleton arrow drops a random music disc. A charged creeper — created by a lightning strike — guarantees a mob head drop from any mob it kills. Hitting a creeper with a Channeling trident during a thunderstorm turns it into a charged creeper.",
+
+  "scribble_book.entity.minecraft.enderman.title": "Enderman",
+  "scribble_book.entity.minecraft.enderman.basic": "Endermen are neutral until you look directly at them, at which point they become hostile. They teleport away from water and projectiles and can pick up certain blocks and carry them around.",
+  "scribble_book.entity.minecraft.enderman.deep": "Wearing a carved pumpkin on your head prevents endermen from becoming hostile regardless of eye contact. Ender pearls dropped by endermen are required to craft Eyes of Ender for finding strongholds. Endermen teleport behind their attacker during combat, making them awkward to hit directly.",
+
+  "scribble_book.entity.minecraft.iron_golem.title": "Iron Golem",
+  "scribble_book.entity.minecraft.iron_golem.basic": "Iron golems protect villagers from hostile mobs. They can be crafted by placing iron blocks in a T-shape and placing a carved pumpkin on top. They hurl enemies into the air with their attacks.",
+  "scribble_book.entity.minecraft.iron_golem.deep": "Iron golems have 100 HP and show visible cracks at low health — right-clicking with iron ingots heals them. They occasionally offer poppies to villagers. Low village popularity (from harming villagers) causes naturally spawned golems to turn hostile toward you.",
+
+  "scribble_book.entity.minecraft.bee.title": "Bee",
+  "scribble_book.entity.minecraft.bee.basic": "Bees pollinate flowers and nearby crops, then return to their hive. Once a hive reaches honey level 5, you can harvest honey bottles with a glass bottle or honeycomb with shears. Bees sting once and die shortly after.",
+  "scribble_book.entity.minecraft.bee.deep": "Placing a lit campfire directly below a hive prevents bees from becoming angry when you harvest it. Bees are bred with any flower and take shelter in their hive at night and during rain. Honeycomb is used to craft beehives, wax copper blocks, and candlesticks.",
+
+  "scribble_book.entity.minecraft.warden.title": "Warden",
+  "scribble_book.entity.minecraft.warden.basic": "The Warden is a blind boss mob that spawns in Ancient Cities deep underground. It detects players through vibrations and smell rather than sight. It has 500 HP and deals enough damage to kill a fully-armored player in two hits.",
+  "scribble_book.entity.minecraft.warden.deep": "The Warden is not meant to be fought — sneaking and using wool to muffle footsteps is the intended approach. Its Sonic Boom attack ignores armor and shields entirely. Killing it drops a sculk catalyst; but the Swift Sneak enchantment, found only in Ancient City loot, is the real prize.",
+
+  "advancements.scribble_book.explosive_story.title": "Explosive Story",
+  "advancements.scribble_book.explosive_story.description": "Study a creeper. From a safe distance, of course.",
+
+  "advancements.scribble_book.dont_yell.title": "Don't Yell, I'm Taking Notes",
+  "advancements.scribble_book.dont_yell.description": "Study a Warden while it's trying to kill you."
 }

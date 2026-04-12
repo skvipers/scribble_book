@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.iron_golem.title",
+  "basic": "scribble_book.entity.minecraft.iron_golem.basic",
+  "deep":  "scribble_book.entity.minecraft.iron_golem.deep",
+  "sneak_only": true
+}

@@ -1,0 +1,16 @@
+{
+  "display": {
+    "icon": { "id": "minecraft:gunpowder" },
+    "title": { "translate": "advancements.scribble_book.explosive_story.title" },
+    "description": { "translate": "advancements.scribble_book.explosive_story.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "scribble_book:root",
+  "criteria": {
+    "study_creeper": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

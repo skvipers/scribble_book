@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.villager.title",
+  "basic": "scribble_book.entity.minecraft.villager.basic",
+  "deep":  "scribble_book.entity.minecraft.villager.deep",
+  "sneak_only": true
+}

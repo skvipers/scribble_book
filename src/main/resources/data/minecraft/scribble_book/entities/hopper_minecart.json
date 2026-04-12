@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.hopper_minecart.title",
+  "basic": "scribble_book.entity.minecraft.hopper_minecart.basic",
+  "deep":  "scribble_book.entity.minecraft.hopper_minecart.deep",
+  "sneak_only": false
+}

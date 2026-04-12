@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.enderman.title",
+  "basic": "scribble_book.entity.minecraft.enderman.basic",
+  "deep":  "scribble_book.entity.minecraft.enderman.deep",
+  "sneak_only": true
+}

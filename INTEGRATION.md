@@ -1,6 +1,6 @@
 # Scribble Book — Integration Guide
 
-This guide explains how to add Scribble Book support to your mod: creating block entries, localising text, customising the tab icon, and hooking into the study event.
+This guide explains how to add Scribble Book support to your mod: creating block and entity entries, localising text, customising the tab icon, and hooking into the study event.
 
 ---
 
@@ -37,7 +37,7 @@ Entries are loaded as a server-side data pack. No Java code required.
 ### File location
 
 ```
-data/<your_modid>/scribble_book/entries/<block_id>.json
+data/<your_modid>/scribble_book/blocks/<block_id>.json
 ```
 
 The `<block_id>` must match the block's registry name exactly (e.g. `my_furnace` for `yourmod:my_furnace`).
@@ -48,15 +48,17 @@ The `<block_id>` must match the block's registry name exactly (e.g. `my_furnace`
 {
   "title": "My Furnace",
   "basic": "A furnace that runs on magic instead of coal.",
-  "deep":  "Efficiency doubles when placed near a mana crystal."
+  "deep":  "Efficiency doubles when placed near a mana crystal.",
+  "sneak_only": false
 }
 ```
 
-| Field   | Required | Description |
-|---------|----------|-------------|
-| `title` | Yes | Display name shown in the book |
-| `basic` | Yes | Text shown after the first study (Shift+RMB) |
-| `deep`  | No  | Text shown after the second study. Omit if there is no extra information |
+| Field        | Required | Description |
+|--------------|----------|-------------|
+| `title`      | Yes | Display name shown in the book |
+| `basic`      | Yes | Text shown after the first study |
+| `deep`       | No  | Text shown after the second study. Omit if there is no extra information |
+| `sneak_only` | No  | If `true`, the entry is only triggered by Shift+RMB (default: `false`) |
 
 If `deep` is absent or blank, the block can only be studied once.
 
@@ -68,7 +70,8 @@ Any field can hold a lang key instead of raw text. The book resolves it at rende
 {
   "title": "yourmod.entry.my_furnace.title",
   "basic": "yourmod.entry.my_furnace.basic",
-  "deep":  "yourmod.entry.my_furnace.deep"
+  "deep":  "yourmod.entry.my_furnace.deep",
+  "sneak_only": false
 }
 ```
 
@@ -85,7 +88,58 @@ This is the **recommended approach** — it keeps all translatable strings in on
 
 ---
 
-## 3. Tab Icon
+## 3. Adding Entity Entries
+
+Entity entries work identically to block entries but are triggered by interacting with a living entity.
+
+### File location
+
+```
+data/<your_modid>/scribble_book/entities/<entity_id>.json
+```
+
+### JSON format
+
+```json
+{
+  "title": "yourmod.entity.my_creature.title",
+  "basic": "yourmod.entity.my_creature.basic",
+  "deep":  "yourmod.entity.my_creature.deep",
+  "sneak_only": true
+}
+```
+
+Setting `sneak_only: true` is recommended for hostile or dangerous mobs — it prevents accidentally triggering the book while trying to attack.
+
+---
+
+## 4. Aliases
+
+Aliases let you redirect multiple block or entity IDs to a single entry. This is useful when several variants share the same knowledge (e.g. all coloured beds pointing to one `bed` entry).
+
+### File location
+
+```
+data/<your_modid>/scribble_book/aliases/<any_name>.json
+```
+
+Multiple alias files are merged at load time, so you can split them however you like.
+
+### JSON format
+
+```json
+{
+  "yourmod:red_widget":  "yourmod:widget",
+  "yourmod:blue_widget": "yourmod:widget",
+  "yourmod:green_widget": "yourmod:widget"
+}
+```
+
+Keys are the IDs to redirect; values are the canonical entry key to look up. Both blocks and entities share the same alias map.
+
+---
+
+## 5. Tab Icon
 
 Each mod's entries are grouped into a separate tab in the book UI. The icon is resolved automatically in this priority order:
 
@@ -111,7 +165,7 @@ data/<your_modid>/scribble_book/tab_icon.json
 
 ---
 
-## 4. Study Event
+## 6. Study Event
 
 `ScribbleBookStudyEvent` is fired on `NeoForge.EVENT_BUS` **before** a player studies a block. You can:
 
@@ -151,7 +205,7 @@ Costs are clamped to `≥ 0`. Cancelling the event prevents both resource consum
 
 ---
 
-## 5. Custom Entry Keys
+## 7. Custom Entry Keys
 
 By default the book uses the block's registry ID as the entry key (`minecraft:furnace`, etc.). You can override this in `ScribbleBookStudyEvent` to store progress under any identifier you choose — including dynamic sub-keys computed at study time.
 
@@ -166,9 +220,9 @@ By default the book uses the block's registry ID as the entry key (`minecraft:fu
 1. Place your entry JSONs at the appropriate paths:
 
 ```
-data/yourmod/scribble_book/entries/block_spawner.json          → yourmod:block_spawner
-data/yourmod/scribble_book/entries/block_spawner/ores.json     → yourmod:block_spawner/ores
-data/yourmod/scribble_book/entries/block_spawner/mobs.json     → yourmod:block_spawner/mobs
+data/yourmod/scribble_book/blocks/block_spawner.json          → yourmod:block_spawner
+data/yourmod/scribble_book/blocks/block_spawner/ores.json     → yourmod:block_spawner/ores
+data/yourmod/scribble_book/blocks/block_spawner/mobs.json     → yourmod:block_spawner/mobs
 ```
 
 2. Override `entryKey` in the event:
@@ -207,7 +261,7 @@ public static void onStudy(ScribbleBookStudyEvent event) {
 
 ---
 
-## 6. Reading Book Data  
+## 8. Reading Book Data  
 
 `BookData` is stored as a data component on the Scribble Book item stack. You can read it anywhere you have access to the item:
 
@@ -230,13 +284,13 @@ if (data.hasEntry(blockId)) {
 
 | Value | Meaning |
 |-------|---------|
-| `BASIC` | Player has studied the block once |
-| `DEEP` | Player has studied the block twice (full knowledge) |
-| `null` | Block has not been studied |
+| `BASIC` | Player has studied the entry once |
+| `DEEP` | Player has studied the entry twice (full knowledge) |
+| `null` | Entry has not been studied |
 
 ---
 
-## 7. Default Study Costs
+## 9. Default Study Costs
 
 The server operator configures costs in `config/scribble_book-common.toml`:
 
@@ -251,7 +305,7 @@ One ink bottle holds **100 units**. When depleted it becomes an empty bottle.
 
 ---
 
-## 8. Soft Dependency Pattern
+## 10. Soft Dependency Pattern
 
 If Scribble Book is optional for your mod, guard all API calls:
 
@@ -269,21 +323,24 @@ Keep all Scribble Book imports inside a separate `ScribbleBookCompat` class so t
 
 ---
 
-## 9. Minimal Example
+## 11. Minimal Example
 
 ```
 data/
   yourmod/
     scribble_book/
-      entries/
+      blocks/
         magic_furnace.json
         crystal_table.json
+      entities/
+        fire_sprite.json
+      aliases/
+        blocks.json
 
 assets/
   yourmod/
     lang/
       en_us.json
-      ru_ru.json
 ```
 
 `magic_furnace.json`:
@@ -291,7 +348,26 @@ assets/
 {
   "title": "yourmod.entry.magic_furnace.title",
   "basic": "yourmod.entry.magic_furnace.basic",
-  "deep":  "yourmod.entry.magic_furnace.deep"
+  "deep":  "yourmod.entry.magic_furnace.deep",
+  "sneak_only": false
+}
+```
+
+`fire_sprite.json`:
+```json
+{
+  "title": "yourmod.entity.fire_sprite.title",
+  "basic": "yourmod.entity.fire_sprite.basic",
+  "sneak_only": true
+}
+```
+
+`aliases/blocks.json` (redirect all coloured variants to one entry):
+```json
+{
+  "yourmod:red_crystal_lamp":   "yourmod:crystal_lamp",
+  "yourmod:blue_crystal_lamp":  "yourmod:crystal_lamp",
+  "yourmod:green_crystal_lamp": "yourmod:crystal_lamp"
 }
 ```
 
@@ -300,7 +376,9 @@ assets/
 {
   "yourmod.entry.magic_furnace.title": "Magic Furnace",
   "yourmod.entry.magic_furnace.basic": "Smelts items using ambient mana. Requires no fuel.",
-  "yourmod.entry.magic_furnace.deep":  "Output speed scales with local mana density. Place near a mana pool for best results."
+  "yourmod.entry.magic_furnace.deep":  "Output speed scales with local mana density. Place near a mana pool for best results.",
+  "yourmod.entity.fire_sprite.title": "Fire Sprite",
+  "yourmod.entity.fire_sprite.basic": "A small elemental that ignites nearby blocks. Immune to fire damage."
 }
 ```
 

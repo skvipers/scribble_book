@@ -84,3 +84,23 @@ tasks.named('jar', Jar).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId    = 'org.skvipers'
+            artifactId = 'scribble_book'
+            version    = mod_version
+            artifact(jar) { classifier = 'api' }
+        }
+    }
+    repositories {
+        maven {
+            url = "https://maven.pkg.github.com/skvipers/scribble_book"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key")  ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}

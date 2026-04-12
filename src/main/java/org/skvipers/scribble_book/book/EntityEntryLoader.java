@@ -12,24 +12,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookEntryLoader extends SimpleJsonResourceReloadListener<BookEntry> {
-    public static final BookEntryLoader INSTANCE = new BookEntryLoader();
+public class EntityEntryLoader extends SimpleJsonResourceReloadListener<BookEntry> {
+    public static final EntityEntryLoader INSTANCE = new EntityEntryLoader();
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private Map<Identifier, BookEntry> entries = Map.of();
 
-    private BookEntryLoader() {
-        super(BookEntry.CODEC, FileToIdConverter.json("scribble_book/blocks"));
+    private EntityEntryLoader() {
+        super(BookEntry.CODEC, FileToIdConverter.json("scribble_book/entities"));
     }
 
     @Override
     protected void apply(Map<Identifier, BookEntry> objects, ResourceManager manager, ProfilerFiller profiler) {
         entries = Collections.unmodifiableMap(new HashMap<>(objects));
-        LOGGER.info("Loaded {} scribble book entries", entries.size());
+        LOGGER.info("Loaded {} scribble book entity entries", entries.size());
     }
 
-    public BookEntry getEntry(Identifier blockId) {
-        return entries.get(blockId);
+    public BookEntry getEntry(Identifier entityTypeId) {
+        return entries.get(entityTypeId);
     }
 
     public Map<Identifier, BookEntry> getAllEntries() {

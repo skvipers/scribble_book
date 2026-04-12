@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.entity.minecraft.chest_minecart.title",
+  "basic": "scribble_book.entity.minecraft.chest_minecart.basic",
+  "deep":  "scribble_book.entity.minecraft.chest_minecart.deep",
+  "sneak_only": false
+}

@@ -17,6 +17,7 @@ import org.skvipers.scribble_book.ScribbleBook;
 import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
+import org.skvipers.scribble_book.book.EntityEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.registry.ModDataComponents;
 
@@ -79,7 +80,8 @@ public class ScribbleBookScreen extends Screen {
     private static final BookEntry  GUIDE_ENTRY = new BookEntry(
             "scribble_book.guide.title",
             "scribble_book.guide.text",
-            ""
+            "",
+            true
     );
 
     // --- Tab group ---
@@ -109,6 +111,7 @@ public class ScribbleBookScreen extends Screen {
     private int upBtnX, upBtnY, downBtnX, downBtnY;
 
     private List<FormattedCharSequence> contentLines = List.of();
+    private int scribbleEntryListY;
 
     // -------------------------------------------------------------------------
 
@@ -121,28 +124,31 @@ public class ScribbleBookScreen extends Screen {
     private void buildTabs() {
         BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
-        // Group entries by namespace; merge scribble_book into minecraft tab
         Map<String, List<Map.Entry<Identifier, BookEntry>>> byNs = new LinkedHashMap<>();
-        BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+        // Combine block and entity entries, filter to what the player has studied
+        java.util.stream.Stream.concat(
+                BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+        )
                 .filter(e -> data.hasEntry(e.getKey()))
                 .sorted(Map.Entry.comparingByValue((a, b) -> a.title().compareToIgnoreCase(b.title())))
-                .forEach(e -> {
-                    String ns = e.getKey().getNamespace();
-                    if (ns.equals(ScribbleBook.MODID)) ns = "minecraft";
-                    byNs.computeIfAbsent(ns, k -> new ArrayList<>()).add(e);
-                });
+                .forEach(e -> byNs.computeIfAbsent(e.getKey().getNamespace(), k -> new ArrayList<>()).add(e));
 
-        // Guide entry is always first in the minecraft tab
-        byNs.computeIfAbsent("minecraft", k -> new ArrayList<>())
+        // Guide entry is always first in the scribble_book tab
+        byNs.computeIfAbsent(ScribbleBook.MODID, k -> new ArrayList<>())
                 .add(0, Map.entry(GUIDE_ID, GUIDE_ENTRY));
 
-        // minecraft first, then other mods alphabetically
+        // scribble_book first, minecraft second, then other mods alphabetically
         List<String> order = new ArrayList<>();
+        if (byNs.containsKey(ScribbleBook.MODID)) order.add(ScribbleBook.MODID);
         if (byNs.containsKey("minecraft")) order.add("minecraft");
-        byNs.keySet().stream().filter(k -> !k.equals("minecraft")).sorted().forEach(order::add);
+        byNs.keySet().stream()
+                .filter(k -> !k.equals(ScribbleBook.MODID) && !k.equals("minecraft"))
+                .sorted().forEach(order::add);
 
         for (String ns : order) {
-            tabs.add(new TabGroup(ns, resolveTabIcon(ns), byNs.get(ns)));
+            ItemStack icon = ns.equals(ScribbleBook.MODID) ? bookStack.copyWithCount(1) : resolveTabIcon(ns);
+            tabs.add(new TabGroup(ns, icon, byNs.get(ns)));
         }
 
         entries = tabs.isEmpty() ? List.of() : tabs.get(0).entries();
@@ -183,6 +189,8 @@ public class ScribbleBookScreen extends Screen {
         entriesPerPage  = L_TEXT_H / (font.lineHeight + 2);
         // title (lineHeight+3) + separator (1+4) = lineHeight+8 consumed before content
         maxContentLines = (R_TEXT_H - font.lineHeight - 8) / font.lineHeight;
+        // progress section: label(lH+2) + bar(5+2) + pct(lH+3) + separator(1+4)
+        scribbleEntryListY = bookY + L_TEXT_Y + font.lineHeight + 2 + 5 + 2 + font.lineHeight + 3 + 1 + 4;
         tabsPerSide     = Math.min(8, (BOOK_H - TAB_TOP) / (TAB_H + TAB_GAP));
 
         int navY = bookY + L_TEXT_Y + L_TEXT_H + 4;
@@ -296,8 +304,10 @@ public class ScribbleBookScreen extends Screen {
     // --- Left page -----------------------------------------------------------
 
     private void renderLeftPage(GuiGraphicsExtractor gui, Font font, int mx, int my) {
+        if (isScribbleTab()) renderProgressSection(gui, font);
+
         int lx     = bookX + L_TEXT_X;
-        int ly     = bookY + L_TEXT_Y;
+        int ly     = isScribbleTab() ? scribbleEntryListY : bookY + L_TEXT_Y;
         int entryH = font.lineHeight + 2;
 
         BookData data  = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
@@ -344,6 +354,61 @@ public class ScribbleBookScreen extends Screen {
         }
     }
 
+    private boolean isScribbleTab() {
+        return !tabs.isEmpty() && tabs.get(selectedTab).namespace().equals(ScribbleBook.MODID);
+    }
+
+    private void renderProgressSection(GuiGraphicsExtractor gui, Font font) {
+        var allBlock  = BookEntryLoader.INSTANCE.getAllEntries();
+        var allEntity = EntityEntryLoader.INSTANCE.getAllEntries();
+        BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
+
+        int maxPoints = 0, points = 0;
+        for (var e : java.util.stream.Stream.concat(allBlock.entrySet().stream(), allEntity.entrySet().stream())
+                .collect(java.util.stream.Collectors.toList())) {
+            int entryMax = e.getValue().hasDeepText() ? 2 : 1;
+            maxPoints += entryMax;
+            KnowledgeLevel lvl = data.getLevel(e.getKey());
+            if (lvl == KnowledgeLevel.BASIC)     points += 1;
+            else if (lvl == KnowledgeLevel.DEEP) points += entryMax;
+        }
+
+        int lx = bookX + L_TEXT_X;
+        int ly = bookY + L_TEXT_Y;
+
+        // Label
+        String label = net.minecraft.locale.Language.getInstance().getOrDefault("scribble_book.progress.label");
+        gui.text(font, label, lx, ly, COL_HINT, false);
+        ly += font.lineHeight + 2;
+
+        // Bar
+        int barW = L_TEXT_W, barH = 5;
+        int fillW = (maxPoints > 0 && points > 0)
+                ? (points == maxPoints ? barW : Math.max(1, barW * points / maxPoints))
+                : 0;
+        gui.fill(lx, ly, lx + barW, ly + barH, 0xFF4A3520);
+        if (fillW > 0) gui.fill(lx, ly, lx + fillW, ly + barH, COL_SEP);
+        ly += barH + 2;
+
+        // Percentage
+        String pctStr = computeDisplayPct(points, maxPoints) + "%";
+        gui.text(font, pctStr, lx + (barW - font.width(pctStr)) / 2, ly, COL_HINT, false);
+        ly += font.lineHeight + 3;
+
+        // Separator
+        gui.fill(lx, ly, lx + L_TEXT_W, ly + 1, COL_SEP);
+        // ly + 1 + 4 = scribbleEntryListY
+    }
+
+    private int computeDisplayPct(int points, int maxPoints) {
+        if (maxPoints == 0 || points == 0) return 0;
+        if (points == maxPoints)           return 100;
+        int rounded = Math.round((float) points / maxPoints * 100f);
+        if (rounded == 0)   return 1;
+        if (rounded == 100) return 99;
+        return rounded;
+    }
+
     // --- Right page ----------------------------------------------------------
 
     private void renderRightPage(GuiGraphicsExtractor gui, Font font) {
@@ -359,7 +424,10 @@ public class ScribbleBookScreen extends Screen {
         int rx = bookX + R_TEXT_X;
         int ry = bookY + R_TEXT_Y;
 
-        gui.text(font, resolve(net.minecraft.locale.Language.getInstance(), entry.title()), rx, ry, COL_TITLE, false);
+        String title = resolve(net.minecraft.locale.Language.getInstance(), entry.title());
+        if (font.width(title) > R_TEXT_W)
+            title = font.plainSubstrByWidth(title, R_TEXT_W - font.width("…")) + "…";
+        gui.text(font, title, rx, ry, COL_TITLE, false);
         ry += font.lineHeight + 3;
 
         gui.fill(rx, ry, rx + R_TEXT_W, ry + 1, COL_SEP);
@@ -446,7 +514,7 @@ public class ScribbleBookScreen extends Screen {
         Font font  = Minecraft.getInstance().font;
         int entryH = font.lineHeight + 2;
         int lx     = bookX + L_TEXT_X;
-        int ly     = bookY + L_TEXT_Y;
+        int ly     = isScribbleTab() ? scribbleEntryListY : bookY + L_TEXT_Y;
         int start  = entryPage * entriesPerPage;
 
         for (int i = 0; i < entriesPerPage; i++) {

@@ -10,9 +10,14 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import org.skvipers.scribble_book.book.AliasLoader;
+import org.skvipers.scribble_book.command.ScribbleBookCommand;
 import org.skvipers.scribble_book.book.BookEntryLoader;
+import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.item.ScribbleBookItem;
 import org.skvipers.scribble_book.event.SoulboundHandler;
 import org.skvipers.scribble_book.registry.ModDataComponents;
 import org.skvipers.scribble_book.registry.ModItems;
@@ -33,6 +38,8 @@ public class ScribbleBook {
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(SoulboundHandler::onLivingDrops);
         NeoForge.EVENT_BUS.addListener(SoulboundHandler::onPlayerClone);
+        NeoForge.EVENT_BUS.addListener(ScribbleBookItem::onEntityInteract);
+        NeoForge.EVENT_BUS.addListener(ScribbleBookCommand::register);
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -45,5 +52,7 @@ public class ScribbleBook {
 
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "book_entries"), BookEntryLoader.INSTANCE);
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "entity_entries"), EntityEntryLoader.INSTANCE);
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "aliases"), AliasLoader.INSTANCE);
     }
 }

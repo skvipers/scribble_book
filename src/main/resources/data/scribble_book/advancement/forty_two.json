@@ -1,0 +1,16 @@
+{
+  "display": {
+    "icon": { "id": "minecraft:written_book" },
+    "title": { "translate": "advancements.scribble_book.forty_two.title" },
+    "description": { "translate": "advancements.scribble_book.forty_two.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "parent": "scribble_book:thirst_for_knowledge",
+  "criteria": {
+    "answer": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
