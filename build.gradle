@@ -84,6 +84,12 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
+tasks.withType(JavaExec).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    })
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
