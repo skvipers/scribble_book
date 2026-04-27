@@ -19,7 +19,7 @@
   "advancements.scribble_book.thirst_for_knowledge.title": "Thirst for Knowledge",
   "advancements.scribble_book.thirst_for_knowledge.description": "Study 10 entries in your Scribble Book",
   "advancements.scribble_book.forty_two.title": "42",
-  "advancements.scribble_book.forty_two.description": "Deep Thought has finished its calculation. The Answer to the Ultimate Question of Life, the Universe, and Everything.",
+  "advancements.scribble_book.forty_two.description": "Deep Thought's answer: Life, the Universe, and Everything.",
 
   "scribble_book.command.no_book": "No Scribble Book found in your inventory.",
   "scribble_book.command.missing": "First unstudied: %s",
