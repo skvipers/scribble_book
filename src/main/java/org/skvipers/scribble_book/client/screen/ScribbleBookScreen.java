@@ -23,11 +23,7 @@ import java.util.*;
 public class ScribbleBookScreen extends Screen {
 
     // --- Textures ---
-    private static final ResourceLocation TEXTURE          = new ResourceLocation(ScribbleBook.MODID, "textures/gui/scribble_book_ui.png");
-    private static final ResourceLocation SPR_PAGE_PREV    = new ResourceLocation("minecraft", "widget/page_backward");
-    private static final ResourceLocation SPR_PAGE_PREV_HOV= new ResourceLocation("minecraft", "widget/page_backward_highlighted");
-    private static final ResourceLocation SPR_PAGE_NEXT    = new ResourceLocation("minecraft", "widget/page_forward");
-    private static final ResourceLocation SPR_PAGE_NEXT_HOV= new ResourceLocation("minecraft", "widget/page_forward_highlighted");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ScribbleBook.MODID, "textures/gui/scribble_book_ui.png");
 
     // --- Book layout ---
     private static final int TEX_W      = 295;
@@ -296,13 +292,15 @@ public class ScribbleBookScreen extends Screen {
 
         if (entryPage > 0) {
             boolean hov = isHovered(mx, my, prevBtnX, prevBtnY, PAGE_BTN_W, PAGE_BTN_H);
-            gui.blitSprite(hov ? SPR_PAGE_PREV_HOV : SPR_PAGE_PREV,
-                    prevBtnX, prevBtnY, PAGE_BTN_W, PAGE_BTN_H);
+            gui.fill(prevBtnX, prevBtnY, prevBtnX + PAGE_BTN_W, prevBtnY + PAGE_BTN_H,
+                    hov ? 0xBBC8A870 : 0x55C8A870);
+            gui.drawCenteredString(font, "<", prevBtnX + PAGE_BTN_W / 2, prevBtnY + 2, COL_TEXT);
         }
         if ((entryPage + 1) * entriesPerPage < entries.size()) {
             boolean hov = isHovered(mx, my, nextBtnX, nextBtnY, PAGE_BTN_W, PAGE_BTN_H);
-            gui.blitSprite(hov ? SPR_PAGE_NEXT_HOV : SPR_PAGE_NEXT,
-                    nextBtnX, nextBtnY, PAGE_BTN_W, PAGE_BTN_H);
+            gui.fill(nextBtnX, nextBtnY, nextBtnX + PAGE_BTN_W, nextBtnY + PAGE_BTN_H,
+                    hov ? 0xBBC8A870 : 0x55C8A870);
+            gui.drawCenteredString(font, ">", nextBtnX + PAGE_BTN_W / 2, nextBtnY + 2, COL_TEXT);
         }
     }
 
