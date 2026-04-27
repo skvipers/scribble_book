@@ -276,7 +276,7 @@ public class ScribbleBookScreen extends Screen {
             if (sel) gui.fill(lx - 1, ey - 1, lx + L_TEXT_W + 1, ey + entryH - 1, COL_SEL_BG);
 
             String prefix = e.getKey().equals(GUIDE_ID) ? "  "
-                    : (lvl == KnowledgeLevel.DEEP)       ? "❆ " : "• ";
+                    : (lvl == KnowledgeLevel.DEEP)       ? "✦ " : "• ";
             String label  = prefix + resolve(net.minecraft.locale.Language.getInstance(), e.getValue().title());
             if (font.width(label) > L_TEXT_W)
                 label = font.plainSubstrByWidth(label, L_TEXT_W - font.width("…")) + "…";
