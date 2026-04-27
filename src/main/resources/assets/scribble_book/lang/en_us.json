@@ -184,9 +184,6 @@
   "scribble_book.entry.minecraft.calibrated_sculk_sensor.basic": "Works like a sculk sensor but only responds to one specific type of vibration, selected by the redstone signal strength fed into its side input. Signal strength 1–15 maps to different vibration categories.",
   "scribble_book.entry.minecraft.calibrated_sculk_sensor.deep": "The side input acts as a filter: strength 1 = movement, 2 = landing, 3 = projectile, 4 = item interactions, and so on up to 15. This allows precise event detection without reacting to noise. The detection radius is 16 blocks — twice that of a regular sculk sensor.",
 
-  "scribble_book.entry.minecraft.crafter.title": "Crafter",
-  "scribble_book.entry.minecraft.crafter.basic": "Automatically crafts items when it receives a redstone pulse. The 3×3 grid can be configured manually; slots can be disabled to force empty spaces in the recipe. Outputs the crafted item through its front face.",
-  "scribble_book.entry.minecraft.crafter.deep": "Hoppers can fill the crafter's slots, enabling fully automated crafting lines. Disabled slots are never filled by hoppers. The crafter only fires when powered by a new rising edge — a constant signal does nothing. A comparator reads 0 when the crafter is ready and 15 when it has crafted but the output is blocked.",
 
   "scribble_book.entry.minecraft.redstone_lamp.title": "Redstone Lamp",
   "scribble_book.entry.minecraft.redstone_lamp.basic": "A redstone lamp emits light level 15 — the same as glowstone — when powered by a redstone signal. It turns off when the signal stops. Can be powered directly or through adjacent powered blocks.",
