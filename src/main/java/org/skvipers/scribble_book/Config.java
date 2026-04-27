@@ -1,31 +1,31 @@
 package org.skvipers.scribble_book;
 
-import net.minecraftforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @EventBusSubscriber(modid = ScribbleBook.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    private static final ModConfigSpec.IntValue BASIC_INK_COST = BUILDER
+    private static final ForgeConfigSpec.IntValue BASIC_INK_COST = BUILDER
             .comment("Ink units cost for a basic study (Shift+RMB). Ink bottle holds 100 units.")
             .defineInRange("basicInkCost", 10, 0, 100);
 
-    private static final ModConfigSpec.IntValue BASIC_PAPER_COST = BUILDER
+    private static final ForgeConfigSpec.IntValue BASIC_PAPER_COST = BUILDER
             .comment("Paper cost for a basic study (Shift+RMB)")
             .defineInRange("basicPaperCost", 1, 0, 64);
 
-    private static final ModConfigSpec.IntValue DEEP_INK_COST = BUILDER
+    private static final ForgeConfigSpec.IntValue DEEP_INK_COST = BUILDER
             .comment("Ink units cost for a deep study (Shift+RMB on already studied block). Ink bottle holds 100 units.")
             .defineInRange("deepInkCost", 30, 0, 100);
 
-    private static final ModConfigSpec.IntValue DEEP_PAPER_COST = BUILDER
+    private static final ForgeConfigSpec.IntValue DEEP_PAPER_COST = BUILDER
             .comment("Paper cost for a deep study (Shift+RMB on already studied block)")
             .defineInRange("deepPaperCost", 1, 0, 64);
 
-    static final ModConfigSpec SPEC = BUILDER.build();
+    static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static int basicInkCost = 10;
     public static int basicPaperCost = 1;
