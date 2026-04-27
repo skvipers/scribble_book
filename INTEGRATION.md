@@ -15,12 +15,12 @@ dependencies {
 }
 ```
 
-Declare the dependency in your `neoforge.mods.toml` so NeoForge loads it before your mod:
+Declare the dependency in your `mods.toml` so Forge loads it before your mod:
 
 ```toml
 [[dependencies.your_modid]]
     modId = "scribble_book"
-    type = "required"
+    mandatory = true
     versionRange = "[VERSION,)"
     ordering = "BEFORE"
     side = "BOTH"
@@ -167,7 +167,7 @@ data/<your_modid>/scribble_book/tab_icon.json
 
 ## 6. Study Event
 
-`ScribbleBookStudyEvent` is fired on `NeoForge.EVENT_BUS` **before** a player studies a block. You can:
+`ScribbleBookStudyEvent` is fired on `MinecraftForge.EVENT_BUS` **before** a player studies a block. You can:
 
 - Cancel studying entirely
 - Change the ink or paper cost for specific blocks
@@ -175,17 +175,17 @@ data/<your_modid>/scribble_book/tab_icon.json
 ```java
 @SubscribeEvent
 public static void onStudy(ScribbleBookStudyEvent event) {
-    Identifier blockId = BuiltInRegistries.BLOCK.getKey(event.getState().getBlock());
+    ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(event.getState().getBlock());
 
     // Make your blocks free to study
-    if (blockId.getNamespace().equals("yourmod")) {
+    if (blockId != null && blockId.getNamespace().equals("yourmod")) {
         event.setInkCost(0);
         event.setPaperCost(0);
     }
 
     // Prevent studying a specific block
-    if (blockId.equals(Identifier.fromNamespaceAndPath("yourmod", "secret_block"))) {
-        event.cancel();
+    if (new ResourceLocation("yourmod", "secret_block").equals(blockId)) {
+        event.setCanceled(true);
     }
 }
 ```
@@ -237,13 +237,10 @@ public static void onStudy(ScribbleBookStudyEvent event) {
     BlockEntity be = level.getBlockEntity(event.getPos());
 
     if (be instanceof BlockSpawnerEntity spawner && spawner.hasFrame()) {
-        // Dynamic sub-key based on block state
         String category = spawner.getCategory(); // e.g. "ores", "mobs"
-        event.setEntryKey(Identifier.fromNamespaceAndPath("yourmod",
-                "block_spawner/" + category));
+        event.setEntryKey(new ResourceLocation("yourmod", "block_spawner/" + category));
     } else {
-        // Base entry — no frame
-        event.setEntryKey(Identifier.fromNamespaceAndPath("yourmod", "block_spawner"));
+        event.setEntryKey(new ResourceLocation("yourmod", "block_spawner"));
     }
 }
 ```
@@ -261,19 +258,18 @@ public static void onStudy(ScribbleBookStudyEvent event) {
 
 ---
 
-## 8. Reading Book Data  
+## 8. Reading Book Data
 
-`BookData` is stored as a data component on the Scribble Book item stack. You can read it anywhere you have access to the item:
+`BookData` is stored as NBT on the Scribble Book item stack. You can read it anywhere you have access to the item:
 
 ```java
 import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
-import org.skvipers.scribble_book.registry.ModDataComponents;
 
 ItemStack book = player.getMainHandItem(); // or wherever you get it
-BookData data = book.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
+BookData data = BookData.fromStack(book);
 
-Identifier blockId = Identifier.fromNamespaceAndPath("minecraft", "furnace");
+ResourceLocation blockId = new ResourceLocation("minecraft", "furnace");
 
 if (data.hasEntry(blockId)) {
     KnowledgeLevel level = data.getLevel(blockId); // BASIC or DEEP
