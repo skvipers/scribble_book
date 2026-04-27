@@ -84,10 +84,13 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
-tasks.withType(JavaExec).configureEach {
-    javaLauncher.set(javaToolchains.launcherFor {
+afterEvaluate {
+    def java17 = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(17)
-    })
+    }.get().executablePath.asFile.absolutePath
+    tasks.withType(JavaExec).configureEach {
+        executable = java17
+    }
 }
 
 publishing {
