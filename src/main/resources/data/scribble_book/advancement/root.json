@@ -1,9 +1,9 @@
 {
   "display": {
-    "icon": { "id": "scribble_book:scribble_book" },
+    "icon": { "item": "scribble_book:scribble_book" },
     "title": { "translate": "advancements.scribble_book.root.title" },
     "description": { "translate": "advancements.scribble_book.root.description" },
-    "background": "minecraft:gui/advancements/backgrounds/stone",
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
     "frame": "task",
     "show_toast": false,
     "announce_to_chat": false

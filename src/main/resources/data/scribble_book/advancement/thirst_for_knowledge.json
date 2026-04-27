@@ -1,6 +1,6 @@
 {
   "display": {
-    "icon": { "id": "minecraft:feather" },
+    "icon": { "item": "minecraft:feather" },
     "title": { "translate": "advancements.scribble_book.thirst_for_knowledge.title" },
     "description": { "translate": "advancements.scribble_book.thirst_for_knowledge.description" },
     "frame": "task",

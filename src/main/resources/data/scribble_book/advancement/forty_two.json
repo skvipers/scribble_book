@@ -1,6 +1,6 @@
 {
   "display": {
-    "icon": { "id": "minecraft:written_book" },
+    "icon": { "item": "minecraft:written_book" },
     "title": { "translate": "advancements.scribble_book.forty_two.title" },
     "description": { "translate": "advancements.scribble_book.forty_two.description" },
     "frame": "challenge",

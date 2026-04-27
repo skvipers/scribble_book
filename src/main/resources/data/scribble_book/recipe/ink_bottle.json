@@ -6,10 +6,10 @@
     " P "
   ],
   "key": {
-    "P": "minecraft:glass_pane"
+    "P": { "item": "minecraft:glass_pane" }
   },
   "result": {
-    "id": "scribble_book:ink_bottle",
+    "item": "scribble_book:ink_bottle",
     "count": 1
   }
 }

@@ -1,6 +1,6 @@
 {
   "display": {
-    "icon": { "id": "minecraft:gunpowder" },
+    "icon": { "item": "minecraft:gunpowder" },
     "title": { "translate": "advancements.scribble_book.explosive_story.title" },
     "description": { "translate": "advancements.scribble_book.explosive_story.description" },
     "frame": "task",

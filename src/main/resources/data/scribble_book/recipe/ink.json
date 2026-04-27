@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "scribble_book:ink_bottle",
-    "minecraft:ink_sac",
-    "minecraft:ink_sac"
+    { "item": "scribble_book:ink_bottle" },
+    { "item": "minecraft:ink_sac" },
+    { "item": "minecraft:ink_sac" }
   ],
   "result": {
-    "id": "scribble_book:ink"
+    "item": "scribble_book:ink"
   }
 }

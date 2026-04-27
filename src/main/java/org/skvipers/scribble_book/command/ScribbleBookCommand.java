@@ -5,17 +5,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.item.ScribbleBookItem;
-import org.skvipers.scribble_book.registry.ModDataComponents;
 
 import java.util.Comparator;
 import java.util.stream.Stream;
@@ -27,9 +25,8 @@ public class ScribbleBookCommand {
         dispatcher.register(Commands.literal("scribblebook")
                 .requires(src -> {
                     Entity entity = src.getEntity();
-                    if (!(entity instanceof ServerPlayer sp)) return true; // console always allowed
-                    return src.getServer().getPlayerList().isOp(
-                            new NameAndId(sp.getUUID(), sp.getGameProfile().name()));
+                    if (!(entity instanceof ServerPlayer sp)) return true;
+                    return src.getServer().getPlayerList().isOp(sp.getGameProfile());
                 })
                 .then(Commands.literal("missing")
                         .executes(ctx -> executeMissing(ctx.getSource()))));
@@ -52,7 +49,7 @@ public class ScribbleBookCommand {
             return 0;
         }
 
-        BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
+        BookData data = BookData.fromStack(bookStack);
 
         Stream.concat(
                 BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),

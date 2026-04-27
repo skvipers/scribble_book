@@ -1,6 +1,6 @@
 {
   "display": {
-    "icon": { "id": "minecraft:echo_shard" },
+    "icon": { "item": "minecraft:echo_shard" },
     "title": { "translate": "advancements.scribble_book.dont_yell.title" },
     "description": { "translate": "advancements.scribble_book.dont_yell.description" },
     "frame": "task",

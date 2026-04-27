@@ -1,11 +1,11 @@
 package org.skvipers.scribble_book;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ModConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@EventBusSubscriber(modid = ScribbleBook.MODID)
+@EventBusSubscriber(modid = ScribbleBook.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
@@ -27,9 +27,9 @@ public class Config {
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
-    public static int basicInkCost = 1;
+    public static int basicInkCost = 10;
     public static int basicPaperCost = 1;
-    public static int deepInkCost = 3;
+    public static int deepInkCost = 30;
     public static int deepPaperCost = 1;
 
     @SubscribeEvent

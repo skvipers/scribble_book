@@ -7,11 +7,11 @@
     "I"
   ],
   "key": {
-    "B": "minecraft:book",
-    "F": "minecraft:feather",
-    "I": "scribble_book:ink"
+    "B": { "item": "minecraft:book" },
+    "F": { "item": "minecraft:feather" },
+    "I": { "item": "scribble_book:ink" }
   },
   "result": {
-    "id": "scribble_book:scribble_book"
+    "item": "scribble_book:scribble_book"
   }
 }
