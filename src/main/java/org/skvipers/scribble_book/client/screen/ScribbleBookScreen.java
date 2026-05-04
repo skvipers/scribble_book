@@ -18,6 +18,7 @@ import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.registry.ModDataComponents;
 
@@ -127,8 +128,11 @@ public class ScribbleBookScreen extends Screen {
         Map<String, List<Map.Entry<Identifier, BookEntry>>> byNs = new LinkedHashMap<>();
         // Combine block and entity entries, filter to what the player has studied
         java.util.stream.Stream.concat(
-                BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
-                EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                java.util.stream.Stream.concat(
+                        BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                        EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                ),
+                ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
         )
                 .filter(e -> data.hasEntry(e.getKey()))
                 .sorted(Map.Entry.comparingByValue((a, b) -> a.title().compareToIgnoreCase(b.title())))
@@ -364,8 +368,11 @@ public class ScribbleBookScreen extends Screen {
         BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
         int maxPoints = 0, points = 0;
-        for (var e : java.util.stream.Stream.concat(allBlock.entrySet().stream(), allEntity.entrySet().stream())
-                .collect(java.util.stream.Collectors.toList())) {
+        var allItem = ItemEntryLoader.INSTANCE.getAllEntries();
+        for (var e : java.util.stream.Stream.concat(
+                java.util.stream.Stream.concat(allBlock.entrySet().stream(), allEntity.entrySet().stream()),
+                allItem.entrySet().stream()
+        ).collect(java.util.stream.Collectors.toList())) {
             int entryMax = e.getValue().hasDeepText() ? 2 : 1;
             maxPoints += entryMax;
             KnowledgeLevel lvl = data.getLevel(e.getKey());

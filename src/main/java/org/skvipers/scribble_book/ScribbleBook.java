@@ -8,15 +8,20 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import org.skvipers.scribble_book.client.SpyglassScanHandler;
+import org.skvipers.scribble_book.network.ServerboundStudyItemPacket;
 import org.skvipers.scribble_book.book.AliasLoader;
 import org.skvipers.scribble_book.command.ScribbleBookCommand;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.item.ScribbleBookItem;
 import org.skvipers.scribble_book.event.SoulboundHandler;
 import org.skvipers.scribble_book.registry.ModDataComponents;
@@ -35,6 +40,10 @@ public class ScribbleBook {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         modEventBus.addListener(this::onBuildCreativeTab);
+        modEventBus.addListener(this::onRegisterPayloads);
+        if (FMLEnvironment.getDist().isClient()) {
+            NeoForge.EVENT_BUS.addListener(SpyglassScanHandler::onPlayerTick);
+        }
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(SoulboundHandler::onLivingDrops);
         NeoForge.EVENT_BUS.addListener(SoulboundHandler::onPlayerClone);
@@ -50,9 +59,17 @@ public class ScribbleBook {
         }
     }
 
+    private void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(
+                ServerboundStudyItemPacket.TYPE,
+                ServerboundStudyItemPacket.CODEC,
+                ServerboundStudyItemPacket::handle);
+    }
+
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "book_entries"), BookEntryLoader.INSTANCE);
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "entity_entries"), EntityEntryLoader.INSTANCE);
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "item_entries"), ItemEntryLoader.INSTANCE);
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "aliases"), AliasLoader.INSTANCE);
     }
 }

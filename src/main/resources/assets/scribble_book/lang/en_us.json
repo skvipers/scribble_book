@@ -11,6 +11,7 @@
   "scribble_book.already_studied": "You've already studied this thoroughly.",
   "scribble_book.no_entry": "Nothing worth noting here.",
   "scribble_book.no_resources": "You need more ink and paper.",
+  "scribble_book.use_spyglass": "Use a spyglass to study dropped items.",
 
   "scribble_book.progress.label": "Knowledge progress",
 
@@ -26,7 +27,7 @@
   "scribble_book.command.complete": "Your Scribble Book is 100%% complete!",
 
   "scribble_book.guide.title": "Scribble Book",
-  "scribble_book.guide.text": "This book lets you record observations about blocks in the world.\n\nTo study a block, hold the book and press Shift + Right-Click on it. The first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units. Refill it by crafting: empty bottle + 2 ink sacs.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.",
+  "scribble_book.guide.text": "This book lets you record observations about blocks, entities, and items.\n\nTo study a block or mob, hold the book and press Shift + Right-Click on it. To study a dropped item, hold the book in one hand and a spyglass in the other \u2014 zoom in and the book will automatically study whatever you are looking at.\n\nThe first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units. Refill it by crafting: empty bottle + 2 ink sacs.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.",
 
   "scribble_book.entry.minecraft.furnace.title": "Furnace",
   "scribble_book.entry.minecraft.furnace.basic": "A furnace converts raw materials into refined goods using fuel. Place fuel in the bottom slot and the item to smelt in the top.",
@@ -299,6 +300,54 @@
   "scribble_book.entity.minecraft.warden.title": "Warden",
   "scribble_book.entity.minecraft.warden.basic": "The Warden is a blind boss mob that spawns in Ancient Cities deep underground. It detects players through vibrations and smell rather than sight. It has 500 HP and deals enough damage to kill a fully-armored player in two hits.",
   "scribble_book.entity.minecraft.warden.deep": "The Warden is not meant to be fought — sneaking and using wool to muffle footsteps is the intended approach. Its Sonic Boom attack ignores armor and shields entirely. Killing it drops a sculk catalyst; but the Swift Sneak enchantment, found only in Ancient City loot, is the real prize.",
+
+  "scribble_book.item.minecraft.elytra.title": "Elytra",
+  "scribble_book.item.minecraft.elytra.basic": "Elytra are wings worn in the chest slot that allow gliding. Found only in End Ship chests. Activate by jumping from a height and pressing jump again — or right-clicking while airborne. Look up to gain altitude slowly, look down to dive and build speed. Consumes 1 durability per second of flight; at 1 durability remaining, gliding stops.",
+  "scribble_book.item.minecraft.elytra.deep": "Firework rockets boost speed mid-flight — higher firework star power gives more thrust, and rockets without stars still provide a small boost. Normal glide speed is around 30 m/s; a steep dive can reach 67 m/s. Hitting a wall at high speed deals fall damage proportional to impact velocity. Repair with phantom membrane in an anvil. Mending and Unbreaking both work: Unbreaking III roughly quadruples total flight time.",
+
+  "scribble_book.item.minecraft.trident.title": "Trident",
+  "scribble_book.item.minecraft.trident.basic": "A melee and thrown weapon found only by defeating Drowned that carry one. Can strike like an axe in melee or be thrown as a projectile for the same damage. Without Loyalty it must be retrieved manually — like any item entity it despawns after 5 minutes.",
+  "scribble_book.item.minecraft.trident.deep": "Loyalty I–III returns a thrown trident automatically; higher level means faster return. Riptide propels the thrower when thrown in rain or water — incompatible with Loyalty and Channeling. Channeling summons lightning on hit during a thunderstorm, converting pigs to zombified piglins and charging creepers. Impaling deals extra damage (+2.5 per level) to aquatic mobs. Tridents cannot be crafted.",
+
+  "scribble_book.item.minecraft.totem_of_undying.title": "Totem of Undying",
+  "scribble_book.item.minecraft.totem_of_undying.basic": "When held in the main hand or off-hand at the moment of death, the totem activates instead of you dying. Grants Regeneration II for 40 s, Absorption II for 5 s, and Fire Resistance for 40 s. Consumed on use. Dropped only by Evokers.",
+  "scribble_book.item.minecraft.totem_of_undying.deep": "The totem must be held — not sitting in your inventory — at the fatal moment. It saves from any death except falling into the void. Evokers are found in Woodland Mansions and spawn in raids from wave 5 onward. They are fragile but dangerous: they summon Vexes and cast a fang attack. Pairing a totem with strong armor makes most dangerous situations survivable.",
+
+  "scribble_book.item.minecraft.ender_pearl.title": "Ender Pearl",
+  "scribble_book.item.minecraft.ender_pearl.basic": "Throw to teleport instantly to the landing point. Deals 5 damage to the thrower on arrival. Can clear walls, reach gaps, and access otherwise unreachable positions. Dropped by Endermen with a 50% chance.",
+  "scribble_book.item.minecraft.ender_pearl.deep": "Ender pearls function in all three dimensions. A thrown pearl is a persistent entity — if the target chunk loads before the pearl lands, the teleportation still occurs. Throwing a pearl just before fatal damage teleports you to safety instead of dying. Combines with a blaze powder to craft an Eye of Ender, needed to locate and open a stronghold.",
+
+  "scribble_book.item.minecraft.golden_apple.title": "Golden Apple",
+  "scribble_book.item.minecraft.golden_apple.basic": "Eating a golden apple grants Absorption I (4 extra hearts for 2 min) and Regeneration II for 5 seconds. Crafted from an apple surrounded by 8 gold ingots.",
+  "scribble_book.item.minecraft.golden_apple.deep": "Critical use: throwing a Splash Potion of Weakness at a Zombie Villager and then right-clicking it with a golden apple cures it into a regular villager over 2–5 minutes. A cured villager permanently discounts its trades with the player who cured it — typically down to 1 emerald per trade. Essential for efficient trading halls.",
+
+  "scribble_book.item.minecraft.enchanted_golden_apple.title": "Enchanted Golden Apple",
+  "scribble_book.item.minecraft.enchanted_golden_apple.basic": "A rare food found only in loot chests. Grants Absorption IV (16 extra hearts for 2 min), Regeneration II for 20 s, Resistance for 5 min, and Fire Resistance for 5 min. Glows with enchantment sheen despite having no enchantments.",
+  "scribble_book.item.minecraft.enchanted_golden_apple.deep": "Formerly craftable with 8 gold blocks, the recipe was removed in Java 1.9. Found only in dungeon, mineshaft, desert temple, woodland mansion, bastion remnant, ruined portal, stronghold, and ancient city chests. Resistance reduces all incoming damage by 20%, stacking with armor. Combined with Absorption IV, it provides over 24 effective hearts — ideal for Wither fights or the hardest raids.",
+
+  "scribble_book.item.minecraft.crossbow.title": "Crossbow",
+  "scribble_book.item.minecraft.crossbow.basic": "A ranged weapon that must be loaded before firing. Hold right-click to draw the string; release to lock the bolt in place; right-click again to fire. Fires arrows or firework rockets. Faster projectile speed than a bow but slower reload. A loaded crossbow retains its charge when swapped out of the hotbar.",
+  "scribble_book.item.minecraft.crossbow.deep": "Multishot fires 3 arrows in a spread using only 1 arrow. Piercing lets arrows pass through multiple targets (hits = piercing level + 1) — arrows can be retrieved from blocks. Quick Charge I–III cuts reload time down to roughly 0.25 s at max level. A firework rocket fired from a crossbow deals area damage on impact. Crossbows cannot receive Power or Punch.",
+
+  "scribble_book.item.minecraft.shield.title": "Shield",
+  "scribble_book.item.minecraft.shield.basic": "Held in the off-hand and raised by holding right-click. Blocks frontal attacks, reducing projectile damage to zero and melee damage significantly. An axe strike from a player or pillager disables the shield for 5 seconds.",
+  "scribble_book.item.minecraft.shield.deep": "Applying a banner at a crafting table copies its pattern onto the shield (cosmetic only). Shields reduce explosion knockback but cannot fully block blast damage. A Vindicator's axe always triggers the 5-second disable. Tridents and the Warden's Sonic Boom bypass shields entirely. Despite its vulnerabilities, the shield is the most reliable all-around defensive tool in the game.",
+
+  "scribble_book.item.minecraft.firework_rocket.title": "Firework Rocket",
+  "scribble_book.item.minecraft.firework_rocket.basic": "Right-click while wearing elytra to boost flight speed. The number of gunpowder used in crafting (1–3) determines boost duration: 1 ≈ 1 s of thrust, 3 ≈ 3 s. Adding a firework star causes an explosion on detonation. Used in celebrations and fireworks displays.",
+  "scribble_book.item.minecraft.firework_rocket.deep": "Rockets without stars provide elytra boost without exploding — safe for travel. Stars determine color, shape (small ball, large ball, star, creeper face, burst), and effects (trail, twinkle). Dispensers can fire rockets for a fireworks display. A crossbow loaded with a rocket deals area damage on hit equal to the star's damage.",
+
+  "scribble_book.item.minecraft.bundle.title": "Bundle",
+  "scribble_book.item.minecraft.bundle.basic": "Holds multiple stacks of different item types in a single slot — up to 64 bundle units total. Right-click to insert the held item; right-click on the bundle to retrieve the last inserted item (last in, first out). Crafted from 6 rabbit hide and 2 string.",
+  "scribble_book.item.minecraft.bundle.deep": "Each item costs units equal to 64 divided by its max stack size — non-stackable items (tools, armor) fill the whole bundle (64 units); items that stack to 16 cost 4 units each. Bundles cannot be nested inside other bundles. The tooltip shows all stored items on hover. Ideal for grouping small-stack items like ender pearls, signs, or unstackable drops into one slot.",
+
+  "scribble_book.item.minecraft.nether_star.title": "Nether Star",
+  "scribble_book.item.minecraft.nether_star.basic": "Dropped by the Wither upon death. The sole crafting ingredient for a Beacon. Cannot be destroyed by any explosion, including the Wither's own attacks.",
+  "scribble_book.item.minecraft.nether_star.deep": "Summoning the Wither requires 4 soul sand or soul soil in a T-shape with 3 Wither Skeleton skulls placed on top — the skulls drop with a 2.5% chance. The Wither has 300 HP, creates a large explosion on spawn, fires explosive skulls, and becomes immune to projectiles below half health. Placing a Nether Star in a beacon on top of a mineral pyramid (iron, gold, diamond, or netherite blocks) activates it.",
+
+  "scribble_book.item.minecraft.recovery_compass.title": "Recovery Compass",
+  "scribble_book.item.minecraft.recovery_compass.basic": "Points toward your last death location within the same dimension. Crafted from 8 echo shards surrounding a regular compass. Useful for tracking down and recovering items after an unexpected death.",
+  "scribble_book.item.minecraft.recovery_compass.deep": "Only works in the dimension where you died — spins aimlessly in others. Echo shards are found exclusively in Ancient City chests in the Deep Dark biome. The compass keeps pointing to the last death location even after you retrieve your items, until you die again. Does not help when keepInventory is enabled. Invaluable in late game where losing enchanted gear is especially costly.",
 
   "advancements.scribble_book.explosive_story.title": "Explosive Story",
   "advancements.scribble_book.explosive_story.description": "Study a creeper. From a safe distance, of course.",

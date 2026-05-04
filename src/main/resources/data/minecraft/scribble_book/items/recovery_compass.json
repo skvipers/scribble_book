@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.item.minecraft.recovery_compass.title",
+  "basic": "scribble_book.item.minecraft.recovery_compass.basic",
+  "deep":  "scribble_book.item.minecraft.recovery_compass.deep",
+  "sneak_only": false
+}

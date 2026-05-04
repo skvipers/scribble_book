@@ -7,7 +7,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import java.util.List;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,8 +28,10 @@ import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.event.ScribbleBookEntityStudyEvent;
+import org.skvipers.scribble_book.event.ScribbleBookItemStudyEvent;
 import org.skvipers.scribble_book.event.ScribbleBookStudyEvent;
 import org.skvipers.scribble_book.registry.ModDataComponents;
 import org.skvipers.scribble_book.registry.ModItems;
@@ -35,17 +41,66 @@ public class ScribbleBookItem extends Item {
         super(properties);
     }
 
+    private static final double GROUND_STUDY_RANGE = 4.5;
+
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack other = hand == InteractionHand.MAIN_HAND
+                ? player.getOffhandItem() : player.getMainHandItem();
+        boolean hasSpyglass = other.is(Items.SPYGLASS);
+        double range = hasSpyglass ? Config.spyglassRange : GROUND_STUDY_RANGE;
+        boolean canStudy = hasSpyglass || !Config.requireSpyglass;
+
         if (level.isClientSide()) {
-            // Don't open the screen if the player clicked on an entity
-            var hit = net.minecraft.client.Minecraft.getInstance().hitResult;
-            if (hit instanceof net.minecraft.world.phys.EntityHitResult)
+            var mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.hitResult instanceof net.minecraft.world.phys.EntityHitResult)
                 return InteractionResult.PASS;
-            net.minecraft.client.Minecraft.getInstance().setScreen(
-                    new org.skvipers.scribble_book.client.screen.ScribbleBookScreen(player.getItemInHand(hand)));
+            if (canStudy && findItemEntityInRay(player, level, range) != null)
+                return InteractionResult.CONSUME;
+            mc.setScreen(new org.skvipers.scribble_book.client.screen.ScribbleBookScreen(
+                    player.getItemInHand(hand)));
+            return InteractionResult.SUCCESS;
+        }
+
+        if (canStudy) {
+            ItemEntity target = findItemEntityInRay(player, level, range);
+            if (target != null)
+                return doItemStudy(player, target, player.getItemInHand(hand));
         }
         return InteractionResult.SUCCESS;
+    }
+
+    public static ItemEntity findItemEntityInRay(Player player, Level level, double range) {
+        Vec3 eye = player.getEyePosition();
+        Vec3 end = eye.add(player.getLookAngle().scale(range));
+        List<ItemEntity> candidates = level.getEntitiesOfClass(
+                ItemEntity.class, new AABB(eye, end).inflate(0.5), e -> !e.isRemoved());
+        ItemEntity nearest = null;
+        double nearestSq = Double.MAX_VALUE;
+        for (ItemEntity candidate : candidates) {
+            var hit = candidate.getBoundingBox().inflate(0.2).clip(eye, end);
+            if (hit.isPresent()) {
+                double d = eye.distanceToSqr(hit.get());
+                if (d < nearestSq) { nearestSq = d; nearest = candidate; }
+            }
+        }
+        return nearest;
+    }
+
+    public static InteractionResult doItemStudy(Player player, ItemEntity itemEntity, ItemStack bookStack) {
+        return doItemStudy(player, itemEntity, bookStack, false);
+    }
+
+    public static InteractionResult doItemStudy(Player player, ItemEntity itemEntity, ItemStack bookStack, boolean silent) {
+        Identifier itemId = AliasLoader.INSTANCE.resolve(
+                BuiltInRegistries.ITEM.getKey(itemEntity.getItem().getItem()));
+        BookEntry entry = ItemEntryLoader.INSTANCE.getEntry(itemId);
+        if (entry == null) {
+            if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.no_entry"));
+            return InteractionResult.CONSUME;
+        }
+        studyItemEntity(player, itemEntity, bookStack, itemId, entry, silent);
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -61,15 +116,25 @@ public class ScribbleBookItem extends Item {
         Identifier blockId = AliasLoader.INSTANCE.resolve(
                 BuiltInRegistries.BLOCK.getKey(state.getBlock()));
 
-        BookEntry entry = BookEntryLoader.INSTANCE.getEntry(blockId);
+        BookEntry blockEntry = BookEntryLoader.INSTANCE.getEntry(blockId);
+        if (blockEntry != null) {
+            if (blockEntry.sneakOnly() && !player.isShiftKeyDown()) return InteractionResult.PASS;
+            return studyBlock(player, state, pos, blockId, context.getItemInHand(), blockEntry);
+        }
 
-        // No entry — never interfere
-        if (entry == null) return InteractionResult.PASS;
+        // No block entry — check for item entity near the clicked position
+        ItemStack bookStack = context.getItemInHand();
+        ItemStack other = context.getHand() == InteractionHand.MAIN_HAND
+                ? player.getOffhandItem() : player.getMainHandItem();
+        boolean hasSpyglass = other.is(Items.SPYGLASS);
+        if (hasSpyglass || !Config.requireSpyglass) {
+            double range = hasSpyglass ? Config.spyglassRange : GROUND_STUDY_RANGE;
+            ItemEntity nearby = findItemEntityInRay(player, level, range);
+            if (nearby != null)
+                return doItemStudy(player, nearby, bookStack);
+        }
 
-        // Sneak check: if sneak_only and player is not sneaking — pass to vanilla
-        if (entry.sneakOnly() && !player.isShiftKeyDown()) return InteractionResult.PASS;
-
-        return studyBlock(player, state, pos, blockId, context.getItemInHand(), entry);
+        return InteractionResult.PASS;
     }
 
     private InteractionResult studyBlock(Player player, BlockState state, BlockPos pos,
@@ -99,6 +164,11 @@ public class ScribbleBookItem extends Item {
         Level level   = target.level();
         if (level.isClientSide()) return;
 
+        if (target instanceof ItemEntity itemEntity) {
+            handleItemEntityInteract(event, player, itemEntity, bookStack);
+            return;
+        }
+
         Identifier entityId = AliasLoader.INSTANCE.resolve(
                 BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()));
 
@@ -126,29 +196,68 @@ public class ScribbleBookItem extends Item {
                 studyEvent.getInkCost(), studyEvent.getPaperCost(), data);
     }
 
+    private static void handleItemEntityInteract(PlayerInteractEvent.EntityInteract event,
+                                                  Player player, ItemEntity itemEntity,
+                                                  ItemStack bookStack) {
+        if (Config.requireSpyglass) {
+            event.setCanceled(true);
+            player.sendSystemMessage(Component.translatable("scribble_book.use_spyglass"));
+            return;
+        }
+        Identifier itemId = AliasLoader.INSTANCE.resolve(
+                BuiltInRegistries.ITEM.getKey(itemEntity.getItem().getItem()));
+        BookEntry entry = ItemEntryLoader.INSTANCE.getEntry(itemId);
+        if (entry == null) return;
+        if (entry.sneakOnly() && !player.isShiftKeyDown()) return;
+        event.setCanceled(true);
+        studyItemEntity(player, itemEntity, bookStack, itemId, entry, false);
+    }
+
+    private static void studyItemEntity(Player player, ItemEntity itemEntity,
+                                         ItemStack bookStack, Identifier itemId, BookEntry entry, boolean silent) {
+        BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
+        KnowledgeLevel preliminaryLevel = data.getLevel(itemId);
+        int inkCost   = (preliminaryLevel == null) ? Config.basicInkCost   : Config.deepInkCost;
+        int paperCost = (preliminaryLevel == null) ? Config.basicPaperCost : Config.deepPaperCost;
+        ScribbleBookItemStudyEvent studyEvent = new ScribbleBookItemStudyEvent(
+                player, itemEntity, itemId, inkCost, paperCost);
+        NeoForge.EVENT_BUS.post(studyEvent);
+        if (studyEvent.isCanceled()) return;
+        Identifier finalKey = studyEvent.getEntryKey();
+        BookEntry finalEntry = ItemEntryLoader.INSTANCE.getEntry(finalKey);
+        performStudy(player, bookStack, finalKey, finalEntry,
+                studyEvent.getInkCost(), studyEvent.getPaperCost(), data, silent);
+    }
+
     private static InteractionResult performStudy(Player player, ItemStack bookStack,
                                                    Identifier entryKey, BookEntry entry,
                                                    int inkCost, int paperCost, BookData data) {
+        return performStudy(player, bookStack, entryKey, entry, inkCost, paperCost, data, false);
+    }
+
+    private static InteractionResult performStudy(Player player, ItemStack bookStack,
+                                                   Identifier entryKey, BookEntry entry,
+                                                   int inkCost, int paperCost, BookData data, boolean silent) {
         if (entry == null) {
-            player.sendSystemMessage(Component.translatable("scribble_book.no_entry"));
+            if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.no_entry"));
             return InteractionResult.FAIL;
         }
 
         KnowledgeLevel currentLevel = data.getLevel(entryKey);
         if (currentLevel == KnowledgeLevel.DEEP) {
-            player.sendSystemMessage(Component.translatable("scribble_book.already_studied"));
+            if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.already_studied"));
             return InteractionResult.FAIL;
         }
 
         KnowledgeLevel targetLevel = (currentLevel == null) ? KnowledgeLevel.BASIC : KnowledgeLevel.DEEP;
 
         if (targetLevel == KnowledgeLevel.DEEP && !entry.hasDeepText()) {
-            player.sendSystemMessage(Component.translatable("scribble_book.already_studied"));
+            if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.already_studied"));
             return InteractionResult.FAIL;
         }
 
         if (!hasResources(player, inkCost, paperCost)) {
-            player.sendSystemMessage(Component.translatable("scribble_book.no_resources"));
+            if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.no_resources"));
             return InteractionResult.FAIL;
         }
 
@@ -183,8 +292,11 @@ public class ScribbleBookItem extends Item {
             }
 
             boolean allStudied = java.util.stream.Stream.concat(
-                    BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
-                    EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                    java.util.stream.Stream.concat(
+                            BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                            EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                    ),
+                    ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
             ).allMatch(e -> {
                 KnowledgeLevel lvl = newData.getLevel(e.getKey());
                 return e.getValue().hasDeepText() ? lvl == KnowledgeLevel.DEEP : lvl != null;

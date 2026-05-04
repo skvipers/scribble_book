@@ -1,0 +1,6 @@
+{
+  "title": "scribble_book.item.minecraft.crossbow.title",
+  "basic": "scribble_book.item.minecraft.crossbow.basic",
+  "deep":  "scribble_book.item.minecraft.crossbow.deep",
+  "sneak_only": false
+}

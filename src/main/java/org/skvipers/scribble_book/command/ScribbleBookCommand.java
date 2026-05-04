@@ -13,6 +13,7 @@ import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.item.ScribbleBookItem;
 import org.skvipers.scribble_book.registry.ModDataComponents;
@@ -55,8 +56,11 @@ public class ScribbleBookCommand {
         BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
         Stream.concat(
-                BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
-                EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                Stream.concat(
+                        BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                        EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                ),
+                ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
         )
                 .filter(e -> !isFullyStudied(e.getValue(), data.getLevel(e.getKey())))
                 .min(Comparator.comparing(e -> Component.translatable(e.getValue().title()).getString()))
