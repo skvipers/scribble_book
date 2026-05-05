@@ -1,21 +1,26 @@
 package org.skvipers.scribble_book.book;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.server.level.ServerPlayer;
 
-public sealed interface UnlockCondition permits StudiedCondition, AdvancementCondition, AllOfCondition {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public interface UnlockCondition {
 
     String type();
 
     boolean isMet(BookData bookData, ServerPlayer player);
 
+    Map<String, MapCodec<? extends UnlockCondition>> REGISTRY = new ConcurrentHashMap<>();
+
     Codec<UnlockCondition> CODEC = Codec.STRING.dispatch(
             "type",
             UnlockCondition::type,
-            key -> switch (key) {
-                case "studied"     -> StudiedCondition.MAP_CODEC;
-                case "advancement" -> AdvancementCondition.MAP_CODEC;
-                case "all_of"      -> AllOfCondition.MAP_CODEC;
-                default -> throw new IllegalArgumentException("Unknown unlock condition type: " + key);
+            key -> {
+                MapCodec<? extends UnlockCondition> codec = REGISTRY.get(key);
+                if (codec == null) throw new IllegalArgumentException("Unknown unlock condition type: " + key);
+                return codec;
             });
 }

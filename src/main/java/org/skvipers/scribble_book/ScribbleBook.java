@@ -12,8 +12,11 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.skvipers.scribble_book.client.SpyglassScanHandler;
 import org.skvipers.scribble_book.network.ServerboundStudyItemPacket;
@@ -36,6 +39,7 @@ public class ScribbleBook {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public ScribbleBook(IEventBus modEventBus, ModContainer modContainer) {
+        ScribbleBookAPI.registerBuiltins();
         ModItems.ITEMS.register(modEventBus);
         ModDataComponents.DATA_COMPONENTS.register(modEventBus);
 
@@ -51,6 +55,8 @@ public class ScribbleBook {
         NeoForge.EVENT_BUS.addListener(SoulboundHandler::onPlayerClone);
         NeoForge.EVENT_BUS.addListener(ScribbleBookItem::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(ScribbleBookCommand::register);
+        NeoForge.EVENT_BUS.addListener(ScribbleBook::onEntityKilled);
+        NeoForge.EVENT_BUS.addListener(ScribbleBook::onItemPickup);
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -66,6 +72,18 @@ public class ScribbleBook {
                 ServerboundStudyItemPacket.TYPE,
                 ServerboundStudyItemPacket.CODEC,
                 ServerboundStudyItemPacket::handle);
+    }
+
+    private static void onEntityKilled(LivingDeathEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer sp) {
+            ScribbleBookAPI.reEvaluateAllBooks(sp);
+        }
+    }
+
+    private static void onItemPickup(EntityItemPickupEvent event) {
+        if (event.getPlayer() instanceof ServerPlayer sp) {
+            ScribbleBookAPI.reEvaluateAllBooks(sp);
+        }
     }
 
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {
