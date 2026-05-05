@@ -17,7 +17,9 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import org.skvipers.scribble_book.client.ClientNetworkHandler;
 import org.skvipers.scribble_book.client.SpyglassScanHandler;
+import org.skvipers.scribble_book.network.ClientboundOpenBookPacket;
 import org.skvipers.scribble_book.network.ServerboundStudyItemPacket;
 import org.skvipers.scribble_book.book.AliasLoader;
 import org.skvipers.scribble_book.book.BookCategoryLoader;
@@ -55,6 +57,7 @@ public class ScribbleBook {
         NeoForge.EVENT_BUS.addListener(ScribbleBookItem::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(ScribbleBookCommand::register);
         NeoForge.EVENT_BUS.addListener(ScribbleBook::onEntityKilled);
+        NeoForge.EVENT_BUS.addListener(ScribbleBook::onPlayerLogin);
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -66,14 +69,20 @@ public class ScribbleBook {
     }
 
     private void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToServer(
-                ServerboundStudyItemPacket.TYPE,
-                ServerboundStudyItemPacket.CODEC,
-                ServerboundStudyItemPacket::handle);
+        var reg = event.registrar("1");
+        reg.playToServer(ServerboundStudyItemPacket.TYPE, ServerboundStudyItemPacket.CODEC, ServerboundStudyItemPacket::handle);
+        reg.playToClient(ClientboundOpenBookPacket.TYPE, ClientboundOpenBookPacket.CODEC,
+                FMLEnvironment.getDist().isClient() ? ClientNetworkHandler::handleOpenBook : (p, c) -> {});
     }
 
     private static void onEntityKilled(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer sp) {
+            ScribbleBookAPI.reEvaluateAllBooks(sp);
+        }
+    }
+
+    private static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp) {
             ScribbleBookAPI.reEvaluateAllBooks(sp);
         }
     }

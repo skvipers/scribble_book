@@ -25,6 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.skvipers.scribble_book.Config;
 import org.skvipers.scribble_book.book.AliasLoader;
+import org.skvipers.scribble_book.network.ClientboundOpenBookPacket;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.server.level.ServerPlayer;
 import org.skvipers.scribble_book.book.BookData;
@@ -61,8 +62,7 @@ public class ScribbleBookItem extends Item {
                 return InteractionResult.PASS;
             if (canStudy && findItemEntityInRay(player, level, range) != null)
                 return InteractionResult.CONSUME;
-            mc.setScreen(new org.skvipers.scribble_book.client.screen.ScribbleBookScreen(
-                    player.getItemInHand(hand)));
+            // Screen is opened by ClientboundOpenBookPacket from server
             return InteractionResult.SUCCESS;
         }
 
@@ -70,6 +70,16 @@ public class ScribbleBookItem extends Item {
             ItemEntity target = findItemEntityInRay(player, level, range);
             if (target != null)
                 return doItemStudy(player, target, player.getItemInHand(hand));
+        }
+
+        // Re-evaluate unlocks and send packet to open screen on client
+        if (player instanceof ServerPlayer sp) {
+            ItemStack bookStack = player.getItemInHand(hand);
+            BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
+            BookData evaluated = reEvaluateUnlocks(sp, data);
+            bookStack.set(ModDataComponents.BOOK_DATA.get(), evaluated);
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(sp,
+                    new ClientboundOpenBookPacket(hand, evaluated.unlockedEntries()));
         }
         return InteractionResult.SUCCESS;
     }
