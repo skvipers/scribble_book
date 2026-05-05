@@ -18,6 +18,8 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.skvipers.scribble_book.client.SpyglassScanHandler;
 import org.skvipers.scribble_book.network.ServerboundStudyItemPacket;
 import org.skvipers.scribble_book.book.AliasLoader;
+import org.skvipers.scribble_book.book.BookCategoryLoader;
+import org.skvipers.scribble_book.book.CustomEntryLoader;
 import org.skvipers.scribble_book.command.ScribbleBookCommand;
 import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
@@ -70,6 +72,8 @@ public class ScribbleBook {
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "book_entries"), BookEntryLoader.INSTANCE);
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "entity_entries"), EntityEntryLoader.INSTANCE);
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "item_entries"), ItemEntryLoader.INSTANCE);
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "categories"), BookCategoryLoader.INSTANCE);
+        event.addListener(Identifier.fromNamespaceAndPath(MODID, "custom_entries"), CustomEntryLoader.INSTANCE);
         event.addListener(Identifier.fromNamespaceAndPath(MODID, "aliases"), AliasLoader.INSTANCE);
     }
 }

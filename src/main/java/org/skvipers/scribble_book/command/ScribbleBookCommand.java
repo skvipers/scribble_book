@@ -62,6 +62,7 @@ public class ScribbleBookCommand {
                 ),
                 ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
         )
+                .filter(e -> e.getValue().countable())
                 .filter(e -> !isFullyStudied(e.getValue(), data.getLevel(e.getKey())))
                 .min(Comparator.comparing(e -> Component.translatable(e.getValue().title()).getString()))
                 .ifPresentOrElse(
@@ -76,7 +77,7 @@ public class ScribbleBookCommand {
     }
 
     private static boolean isFullyStudied(BookEntry entry, KnowledgeLevel level) {
-        if (entry.hasDeepText()) return level == KnowledgeLevel.DEEP;
+        if (entry.hasDeepSection()) return level == KnowledgeLevel.DEEP;
         return level != null;
     }
 }

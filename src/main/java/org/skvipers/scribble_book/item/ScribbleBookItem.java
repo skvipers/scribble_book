@@ -11,7 +11,10 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
+import org.skvipers.scribble_book.book.CustomEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
 import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
@@ -251,7 +255,7 @@ public class ScribbleBookItem extends Item {
 
         KnowledgeLevel targetLevel = (currentLevel == null) ? KnowledgeLevel.BASIC : KnowledgeLevel.DEEP;
 
-        if (targetLevel == KnowledgeLevel.DEEP && !entry.hasDeepText()) {
+        if (targetLevel == KnowledgeLevel.DEEP && !entry.hasDeepSection()) {
             if (!silent) player.sendSystemMessage(Component.translatable("scribble_book.already_studied"));
             return InteractionResult.FAIL;
         }
@@ -263,13 +267,19 @@ public class ScribbleBookItem extends Item {
 
         consumeResources(player, inkCost, paperCost);
         BookData newData = data.withEntry(entryKey, targetLevel);
+
+        if (player instanceof ServerPlayer sp) {
+            newData = reEvaluateUnlocks(sp, newData);
+        }
+
         bookStack.set(ModDataComponents.BOOK_DATA.get(), newData);
         player.sendSystemMessage(Component.translatable("scribble_book.studied",
                 Component.translatable(entry.title())));
 
         if (player instanceof ServerPlayer sp) {
             var server = sp.level().getServer();
-            int count = newData.entries().size();
+            final BookData finalData = newData;
+            int count = finalData.entries().size();
 
             if (count >= 10) {
                 AdvancementHolder h = server.getAdvancements().get(
@@ -291,15 +301,15 @@ public class ScribbleBookItem extends Item {
                 if (h != null) sp.getAdvancements().award(h, "study_guardian");
             }
 
-            boolean allStudied = java.util.stream.Stream.concat(
-                    java.util.stream.Stream.concat(
+            boolean allStudied = Stream.concat(
+                    Stream.concat(
                             BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
                             EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
                     ),
                     ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
-            ).allMatch(e -> {
-                KnowledgeLevel lvl = newData.getLevel(e.getKey());
-                return e.getValue().hasDeepText() ? lvl == KnowledgeLevel.DEEP : lvl != null;
+            ).filter(e -> e.getValue().countable()).allMatch(e -> {
+                KnowledgeLevel lvl = finalData.getLevel(e.getKey());
+                return e.getValue().hasDeepSection() ? lvl == KnowledgeLevel.DEEP : lvl != null;
             });
             if (allStudied) {
                 AdvancementHolder h = server.getAdvancements().get(
@@ -370,5 +380,19 @@ public class ScribbleBookItem extends Item {
                 toRemove -= removed;
             }
         }
+    }
+
+    public static BookData reEvaluateUnlocks(ServerPlayer sp, BookData data) {
+        Set<Identifier> unlocked = new HashSet<>();
+        Stream.of(
+                BookEntryLoader.INSTANCE.getAllEntries(),
+                EntityEntryLoader.INSTANCE.getAllEntries(),
+                ItemEntryLoader.INSTANCE.getAllEntries(),
+                CustomEntryLoader.INSTANCE.getAllEntries()
+        ).flatMap(m -> m.entrySet().stream()).forEach(e ->
+                e.getValue().unlock().ifPresent(cond -> {
+                    if (cond.isMet(data, sp)) unlocked.add(e.getKey());
+                }));
+        return data.withUnlocked(Set.copyOf(unlocked));
     }
 }

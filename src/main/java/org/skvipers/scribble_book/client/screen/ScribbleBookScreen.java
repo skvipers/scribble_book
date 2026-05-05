@@ -14,12 +14,17 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.skvipers.scribble_book.ScribbleBook;
+import org.skvipers.scribble_book.book.BookCategory;
+import org.skvipers.scribble_book.book.BookCategoryLoader;
 import org.skvipers.scribble_book.book.BookData;
 import org.skvipers.scribble_book.book.BookEntry;
 import org.skvipers.scribble_book.book.BookEntryLoader;
+import org.skvipers.scribble_book.book.ContentBlock;
+import org.skvipers.scribble_book.book.CustomEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
 import org.skvipers.scribble_book.book.ItemEntryLoader;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
+import org.skvipers.scribble_book.book.TextBlock;
 import org.skvipers.scribble_book.registry.ModDataComponents;
 
 import java.util.*;
@@ -76,15 +81,6 @@ public class ScribbleBookScreen extends Screen {
     private static final int COL_SEL_BG = 0x33000000;
     private static final int COL_SEP    = 0xFF8B6914;
 
-    // Special synthetic identifier for the built-in guide entry (not a real block)
-    private static final Identifier GUIDE_ID = Identifier.fromNamespaceAndPath(ScribbleBook.MODID, "guide");
-    private static final BookEntry  GUIDE_ENTRY = new BookEntry(
-            "scribble_book.guide.title",
-            "scribble_book.guide.text",
-            "",
-            true
-    );
-
     // --- Tab group ---
     private record TabGroup(String namespace, ItemStack icon, List<Map.Entry<Identifier, BookEntry>> entries) {}
 
@@ -125,37 +121,70 @@ public class ScribbleBookScreen extends Screen {
     private void buildTabs() {
         BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
-        Map<String, List<Map.Entry<Identifier, BookEntry>>> byNs = new LinkedHashMap<>();
-        // Combine block and entity entries, filter to what the player has studied
+        // Collect visible entries: studied entries + always_visible entries that pass unlock check
+        Map<Identifier, BookEntry> visibleEntries = new LinkedHashMap<>();
         java.util.stream.Stream.concat(
                 java.util.stream.Stream.concat(
-                        BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
-                        EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                        java.util.stream.Stream.concat(
+                                BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                                EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                        ),
+                        ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
                 ),
-                ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                CustomEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
         )
-                .filter(e -> data.hasEntry(e.getKey()))
+                .filter(e -> {
+                    BookEntry entry = e.getValue();
+                    if (entry.unlock().isPresent()) return data.isUnlocked(e.getKey());
+                    return entry.alwaysVisible() || data.hasEntry(e.getKey());
+                })
                 .sorted(Map.Entry.comparingByValue((a, b) -> a.title().compareToIgnoreCase(b.title())))
+                .forEach(e -> visibleEntries.put(e.getKey(), e.getValue()));
+
+        // Assign entries to category tabs (in sortOrder)
+        Set<Identifier> claimed = new HashSet<>();
+        List<TabGroup> categoryTabs = new ArrayList<>();
+        for (var catEntry : BookCategoryLoader.INSTANCE.getSorted()) {
+            BookCategory cat = catEntry.getValue();
+            List<Map.Entry<Identifier, BookEntry>> catEntries = cat.entries().stream()
+                    .filter(visibleEntries::containsKey)
+                    .map(id -> Map.entry(id, visibleEntries.get(id)))
+                    .toList();
+            if (catEntries.isEmpty()) continue;
+            claimed.addAll(cat.entries());
+            categoryTabs.add(new TabGroup(
+                    "category:" + catEntry.getKey(),
+                    resolveCategoryIcon(cat.icon()),
+                    new ArrayList<>(catEntries)));
+        }
+
+        // Unclaimed entries grouped by namespace (fallback)
+        Map<String, List<Map.Entry<Identifier, BookEntry>>> byNs = new LinkedHashMap<>();
+        visibleEntries.entrySet().stream()
+                .filter(e -> !claimed.contains(e.getKey()))
                 .forEach(e -> byNs.computeIfAbsent(e.getKey().getNamespace(), k -> new ArrayList<>()).add(e));
 
-        // Guide entry is always first in the scribble_book tab
-        byNs.computeIfAbsent(ScribbleBook.MODID, k -> new ArrayList<>())
-                .add(0, Map.entry(GUIDE_ID, GUIDE_ENTRY));
+        // scribble_book first, then category tabs, then namespace fallback tabs
+        tabs.add(new TabGroup(ScribbleBook.MODID, bookStack.copyWithCount(1), byNs.getOrDefault(ScribbleBook.MODID, List.of())));
+        tabs.addAll(categoryTabs);
 
-        // scribble_book first, minecraft second, then other mods alphabetically
-        List<String> order = new ArrayList<>();
-        if (byNs.containsKey(ScribbleBook.MODID)) order.add(ScribbleBook.MODID);
-        if (byNs.containsKey("minecraft")) order.add("minecraft");
+        List<String> nsOrder = new ArrayList<>();
+        if (byNs.containsKey("minecraft")) nsOrder.add("minecraft");
         byNs.keySet().stream()
                 .filter(k -> !k.equals(ScribbleBook.MODID) && !k.equals("minecraft"))
-                .sorted().forEach(order::add);
-
-        for (String ns : order) {
-            ItemStack icon = ns.equals(ScribbleBook.MODID) ? bookStack.copyWithCount(1) : resolveTabIcon(ns);
-            tabs.add(new TabGroup(ns, icon, byNs.get(ns)));
+                .sorted().forEach(nsOrder::add);
+        for (String ns : nsOrder) {
+            tabs.add(new TabGroup(ns, resolveTabIcon(ns), byNs.get(ns)));
         }
 
         entries = tabs.isEmpty() ? List.of() : tabs.get(0).entries();
+    }
+
+    private static ItemStack resolveCategoryIcon(Identifier iconId) {
+        return BuiltInRegistries.ITEM.getOptional(iconId)
+                .filter(item -> item != Items.AIR)
+                .map(ItemStack::new)
+                .orElse(new ItemStack(Items.BOOK));
     }
 
     private static ItemStack resolveTabIcon(String namespace) {
@@ -328,8 +357,8 @@ public class ScribbleBookScreen extends Screen {
 
             if (sel) gui.fill(lx - 1, ey - 1, lx + L_TEXT_W + 1, ey + entryH - 1, COL_SEL_BG);
 
-            String prefix = e.getKey().equals(GUIDE_ID) ? "  "
-                    : (lvl == KnowledgeLevel.DEEP)       ? "✦ " : "• ";
+            String prefix = e.getValue().alwaysVisible()  ? "  "
+                    : (lvl == KnowledgeLevel.DEEP)        ? "✦ " : "• ";
             String label  = prefix + resolve(net.minecraft.locale.Language.getInstance(), e.getValue().title());
             if (font.width(label) > L_TEXT_W)
                 label = font.plainSubstrByWidth(label, L_TEXT_W - font.width("…")) + "…";
@@ -363,17 +392,17 @@ public class ScribbleBookScreen extends Screen {
     }
 
     private void renderProgressSection(GuiGraphicsExtractor gui, Font font) {
-        var allBlock  = BookEntryLoader.INSTANCE.getAllEntries();
-        var allEntity = EntityEntryLoader.INSTANCE.getAllEntries();
         BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
         int maxPoints = 0, points = 0;
-        var allItem = ItemEntryLoader.INSTANCE.getAllEntries();
         for (var e : java.util.stream.Stream.concat(
-                java.util.stream.Stream.concat(allBlock.entrySet().stream(), allEntity.entrySet().stream()),
-                allItem.entrySet().stream()
-        ).collect(java.util.stream.Collectors.toList())) {
-            int entryMax = e.getValue().hasDeepText() ? 2 : 1;
+                java.util.stream.Stream.concat(
+                        BookEntryLoader.INSTANCE.getAllEntries().entrySet().stream(),
+                        EntityEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+                ),
+                ItemEntryLoader.INSTANCE.getAllEntries().entrySet().stream()
+        ).filter(e -> e.getValue().countable()).collect(java.util.stream.Collectors.toList())) {
+            int entryMax = e.getValue().hasDeepSection() ? 2 : 1;
             maxPoints += entryMax;
             KnowledgeLevel lvl = data.getLevel(e.getKey());
             if (lvl == KnowledgeLevel.BASIC)     points += 1;
@@ -570,16 +599,20 @@ public class ScribbleBookScreen extends Screen {
 
         net.minecraft.locale.Language lang = net.minecraft.locale.Language.getInstance();
 
-        // Guide entry is always shown in full; block entries depend on knowledge level
+        // Always-visible entries shown in full; studied entries depend on knowledge level
         String text;
-        if (selected.getKey().equals(GUIDE_ID)) {
-            text = resolve(lang, entry.basicText());
+        if (entry.alwaysVisible()) {
+            text = blocksToText(lang, entry.getBlocks(KnowledgeLevel.BASIC));
         } else {
             BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
             KnowledgeLevel lvl = data.getLevel(selected.getKey());
-            text = (lvl == KnowledgeLevel.DEEP && entry.hasDeepText())
-                    ? resolve(lang, entry.basicText()) + "\n\n" + resolve(lang, entry.deepText())
-                    : resolve(lang, entry.basicText());
+            String basicText = blocksToText(lang, entry.getBlocks(KnowledgeLevel.BASIC));
+            if (lvl == KnowledgeLevel.DEEP && entry.hasDeepSection()) {
+                String deepText = blocksToText(lang, entry.getBlocks(KnowledgeLevel.DEEP));
+                text = basicText + "\n\n" + deepText;
+            } else {
+                text = basicText;
+            }
         }
 
         List<FormattedCharSequence> lines = new ArrayList<>();
@@ -597,6 +630,19 @@ public class ScribbleBookScreen extends Screen {
     /** Resolves a string as a lang key if it exists, otherwise returns it as-is. */
     private static String resolve(net.minecraft.locale.Language lang, String key) {
         return lang.has(key) ? lang.getOrDefault(key) : key;
+    }
+
+    private static String blocksToText(net.minecraft.locale.Language lang, List<ContentBlock> blocks) {
+        if (blocks.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (ContentBlock b : blocks) {
+            if (b instanceof TextBlock t) {
+                if (!sb.isEmpty()) sb.append("\n\n");
+                sb.append(resolve(lang, t.text()));
+            }
+            // ItemBlock and ImageBlock are stubs in 0.4 — skipped
+        }
+        return sb.toString();
     }
 
     private boolean isHovered(int mx, int my, int x, int y, int w, int h) {

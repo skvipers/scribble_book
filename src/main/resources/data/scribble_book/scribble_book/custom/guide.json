@@ -1,0 +1,13 @@
+{
+  "title": "scribble_book.guide.title",
+  "sections": [
+    {
+      "level": "basic",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.guide.text" }
+      ]
+    }
+  ],
+  "countable": false,
+  "always_visible": true
+}
