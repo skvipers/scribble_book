@@ -1,6 +1,6 @@
 # Scribble Book — Integration Guide
 
-This guide explains how to add Scribble Book support to your mod: creating block and entity entries, localising text, customising the tab icon, and hooking into the study event.
+This guide explains how to add Scribble Book support to your mod: creating entries, hooking into events, reading book data, and registering custom unlock condition types.
 
 ---
 
@@ -10,12 +10,11 @@ Add Scribble Book as a compile-time dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-    // Replace VERSION with the actual release version
     compileOnly "org.skvipers:scribble_book:VERSION:api"
 }
 ```
 
-Declare the dependency in your `neoforge.mods.toml` so NeoForge loads it before your mod:
+Declare the dependency in `neoforge.mods.toml`:
 
 ```toml
 [[dependencies.your_modid]]
@@ -26,360 +25,216 @@ Declare the dependency in your `neoforge.mods.toml` so NeoForge loads it before 
     side = "BOTH"
 ```
 
-> If you only use the data-pack integration (JSON entries, no Java code), the dependency is **optional** — your entries simply won't appear if Scribble Book is absent.
+> If you only use JSON entries (no Java code), the dependency is **optional** — your entries simply won't appear if Scribble Book is absent.
 
 ---
 
-## 2. Adding Block Entries
+## 2. Entry Data Paths
 
-Entries are loaded as a server-side data pack. No Java code required.
+| Type | Path |
+|------|------|
+| Blocks | `data/<modid>/scribble_book/blocks/<id>.json` |
+| Entities | `data/<modid>/scribble_book/entities/<id>.json` |
+| Items | `data/<modid>/scribble_book/items/<id>.json` |
+| Custom pages | `data/<modid>/scribble_book/custom/<id>.json` |
+| Categories | `data/<modid>/scribble_book/categories/<id>.json` |
+| Aliases | `data/<modid>/scribble_book/aliases/<any>.json` |
 
-### File location
+---
 
-```
-data/<your_modid>/scribble_book/blocks/<block_id>.json
-```
+## 3. Entry Format
 
-The `<block_id>` must match the block's registry name exactly (e.g. `my_furnace` for `yourmod:my_furnace`).
+Entries support two formats. The legacy format is still fully supported.
 
-### JSON format
+### Legacy format (flat strings)
 
 ```json
 {
-  "title": "My Furnace",
-  "basic": "A furnace that runs on magic instead of coal.",
-  "deep":  "Efficiency doubles when placed near a mana crystal.",
+  "title": "yourmod.entry.my_block.title",
+  "basic": "yourmod.entry.my_block.basic",
+  "deep":  "yourmod.entry.my_block.deep",
   "sneak_only": false
 }
 ```
 
-| Field        | Required | Description |
-|--------------|----------|-------------|
-| `title`      | Yes | Display name shown in the book |
-| `basic`      | Yes | Text shown after the first study |
-| `deep`       | No  | Text shown after the second study. Omit if there is no extra information |
-| `sneak_only` | No  | If `true`, the entry is only triggered by Shift+RMB (default: `false`) |
-
-If `deep` is absent or blank, the block can only be studied once.
-
-### Using translation keys
-
-Any field can hold a lang key instead of raw text. The book resolves it at render time using the client's active language:
+### New format (sections + blocks)
 
 ```json
 {
-  "title": "yourmod.entry.my_furnace.title",
-  "basic": "yourmod.entry.my_furnace.basic",
-  "deep":  "yourmod.entry.my_furnace.deep",
-  "sneak_only": false
+  "title": "yourmod.entry.my_block.title",
+  "sneak_only": false,
+  "sections": [
+    {
+      "level": "basic",
+      "blocks": [
+        { "type": "text", "text": "yourmod.entry.my_block.basic" }
+      ]
+    },
+    {
+      "level": "deep",
+      "blocks": [
+        { "type": "text", "text": "yourmod.entry.my_block.deep" }
+      ]
+    }
+  ]
 }
 ```
 
-```json
-// assets/yourmod/lang/en_us.json
-{
-  "yourmod.entry.my_furnace.title": "My Furnace",
-  "yourmod.entry.my_furnace.basic": "A furnace that runs on magic instead of coal.",
-  "yourmod.entry.my_furnace.deep":  "Efficiency doubles when placed near a mana crystal."
-}
-```
+### All entry fields
 
-This is the **recommended approach** — it keeps all translatable strings in one place and supports any language your mod provides.
+| Field | Default | Description |
+|-------|---------|-------------|
+| `title` | required | Display name or lang key |
+| `sections` | — | New format: list of `{ level, blocks }` |
+| `basic` / `deep` | — | Legacy format strings |
+| `sneak_only` | `true` | Require Shift+RMB to trigger study |
+| `countable` | `true` | Include in progress bar and `/scribblebook missing` |
+| `always_visible` | `false` | Show without studying (for custom pages) |
+| `unlock` | none | Condition that must be met to show this entry |
 
----
-
-## 3. Adding Entity Entries
-
-Entity entries work identically to block entries but are triggered by interacting with a living entity.
-
-### File location
-
-```
-data/<your_modid>/scribble_book/entities/<entity_id>.json
-```
-
-### JSON format
-
-```json
-{
-  "title": "yourmod.entity.my_creature.title",
-  "basic": "yourmod.entity.my_creature.basic",
-  "deep":  "yourmod.entity.my_creature.deep",
-  "sneak_only": true
-}
-```
-
-Setting `sneak_only: true` is recommended for hostile or dangerous mobs — it prevents accidentally triggering the book while trying to attack.
+Any `title` / `text` value is treated as a lang key if a translation exists, otherwise rendered as-is.
 
 ---
 
 ## 4. Aliases
 
-Aliases let you redirect multiple block or entity IDs to a single entry. This is useful when several variants share the same knowledge (e.g. all coloured beds pointing to one `bed` entry).
-
-### File location
+Redirect multiple IDs to a single entry:
 
 ```
-data/<your_modid>/scribble_book/aliases/<any_name>.json
+data/<modid>/scribble_book/aliases/<any>.json
 ```
-
-Multiple alias files are merged at load time, so you can split them however you like.
-
-### JSON format
 
 ```json
 {
   "yourmod:red_widget":  "yourmod:widget",
-  "yourmod:blue_widget": "yourmod:widget",
-  "yourmod:green_widget": "yourmod:widget"
+  "yourmod:blue_widget": "yourmod:widget"
 }
 ```
 
-Keys are the IDs to redirect; values are the canonical entry key to look up. Both blocks and entities share the same alias map.
+Both blocks and entities share the alias map.
 
 ---
 
-## 5. Tab Icon
+## 5. Study Events
 
-Each mod's entries are grouped into a separate tab in the book UI. The icon is resolved automatically in this priority order:
+Three events are fired on `NeoForge.EVENT_BUS` before a study completes. All are cancellable.
 
-1. The first creative mode tab whose icon item belongs to your mod's namespace
-2. The first item registered under your namespace in the item registry
-3. Fallback: a plain book
+| Event | Triggered by |
+|-------|-------------|
+| `ScribbleBookStudyEvent` | Block study |
+| `ScribbleBookEntityStudyEvent` | Entity study |
+| `ScribbleBookItemStudyEvent` | Item study |
 
-In most cases this works without any configuration — your mod's main creative tab icon will be used.
+All events expose:
 
-### Explicit icon override *(planned)*
-
-A future release will support declaring a custom icon via:
-
+```java
+event.getPlayer()       // Player performing the study
+event.getEntryKey()     // Identifier of the entry being studied
+event.setEntryKey(id)   // Override the entry key (custom sub-keys)
+event.getInkCost()      // Ink units to consume
+event.setInkCost(n)
+event.getPaperCost()
+event.setPaperCost(n)
+event.cancel()
 ```
-data/<your_modid>/scribble_book/tab_icon.json
-```
 
-```json
-{
-  "icon": "yourmod:my_special_block"
-}
-```
-
----
-
-## 6. Study Event
-
-`ScribbleBookStudyEvent` is fired on `NeoForge.EVENT_BUS` **before** a player studies a block. You can:
-
-- Cancel studying entirely
-- Change the ink or paper cost for specific blocks
+### Example — free study for your mod's blocks
 
 ```java
 @SubscribeEvent
 public static void onStudy(ScribbleBookStudyEvent event) {
-    Identifier blockId = BuiltInRegistries.BLOCK.getKey(event.getState().getBlock());
-
-    // Make your blocks free to study
-    if (blockId.getNamespace().equals("yourmod")) {
+    if (event.getEntryKey().getNamespace().equals("yourmod")) {
         event.setInkCost(0);
         event.setPaperCost(0);
     }
-
-    // Prevent studying a specific block
-    if (blockId.equals(Identifier.fromNamespaceAndPath("yourmod", "secret_block"))) {
-        event.cancel();
-    }
 }
 ```
 
-### Event fields
-
-| Method | Type | Description |
-|--------|------|-------------|
-| `getPlayer()` | `Player` | The player who is studying |
-| `getPos()` | `BlockPos` | Position of the block being studied |
-| `getState()` | `BlockState` | Block state at that position |
-| `getTargetLevel()` | `KnowledgeLevel` | `BASIC` (first study) or `DEEP` (second study) |
-| `getInkCost()` / `setInkCost(int)` | `int` | Ink units consumed (0–100 per bottle) |
-| `getPaperCost()` / `setPaperCost(int)` | `int` | Paper sheets consumed |
-
-Costs are clamped to `≥ 0`. Cancelling the event prevents both resource consumption and data storage.
-
 ---
 
-## 7. Custom Entry Keys
+## 6. Reading Book Data
 
-By default the book uses the block's registry ID as the entry key (`minecraft:furnace`, etc.). You can override this in `ScribbleBookStudyEvent` to store progress under any identifier you choose — including dynamic sub-keys computed at study time.
-
-### Why use a custom key?
-
-- Your block has multiple knowledge "topics" depending on its state or context
-- You want to model a multi-step discovery chain that isn't tied to a single block
-- You need a sub-entry hierarchy (e.g. `yourmod:spawner/ores`, `yourmod:spawner/mobs`)
-
-### How it works
-
-1. Place your entry JSONs at the appropriate paths:
-
-```
-data/yourmod/scribble_book/blocks/block_spawner.json          → yourmod:block_spawner
-data/yourmod/scribble_book/blocks/block_spawner/ores.json     → yourmod:block_spawner/ores
-data/yourmod/scribble_book/blocks/block_spawner/mobs.json     → yourmod:block_spawner/mobs
-```
-
-2. Override `entryKey` in the event:
+`BookData` is a data component on the `ItemStack`. Read it anywhere you have the item:
 
 ```java
-@SubscribeEvent
-public static void onStudy(ScribbleBookStudyEvent event) {
-    BlockState state = event.getState();
-    if (!(state.getBlock() instanceof BlockSpawnerBlock)) return;
-
-    Level level = event.getPlayer().level();
-    BlockEntity be = level.getBlockEntity(event.getPos());
-
-    if (be instanceof BlockSpawnerEntity spawner && spawner.hasFrame()) {
-        // Dynamic sub-key based on block state
-        String category = spawner.getCategory(); // e.g. "ores", "mobs"
-        event.setEntryKey(Identifier.fromNamespaceAndPath("yourmod",
-                "block_spawner/" + category));
-    } else {
-        // Base entry — no frame
-        event.setEntryKey(Identifier.fromNamespaceAndPath("yourmod", "block_spawner"));
-    }
-}
-```
-
-3. The book will:
-   - Look up the entry JSON by `event.getEntryKey()`
-   - Persist BASIC / DEEP progress separately per key
-   - Display the entry under the correct tab (grouped by namespace)
-
-### Notes
-
-- If you change the key, you are responsible for setting appropriate `inkCost` / `paperCost` too, since the default costs are computed from the block's default key before the event fires.
-- Sub-keys (`block_spawner/ores`) appear as separate entries in the book list, sorted alphabetically alongside other entries of the same namespace.
-- A `null` entry for the overridden key causes the book to show the "nothing worth noting" message, which you can use to silently block studying in certain states.
-
----
-
-## 8. Reading Book Data  
-
-`BookData` is stored as a data component on the Scribble Book item stack. You can read it anywhere you have access to the item:
-
-```java
-import org.skvipers.scribble_book.book.BookData;
-import org.skvipers.scribble_book.book.KnowledgeLevel;
-import org.skvipers.scribble_book.registry.ModDataComponents;
-
-ItemStack book = player.getMainHandItem(); // or wherever you get it
 BookData data = book.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
 
-Identifier blockId = Identifier.fromNamespaceAndPath("minecraft", "furnace");
+KnowledgeLevel level = data.getLevel(Identifier.fromNamespaceAndPath("yourmod", "my_block"));
+// null = not studied, BASIC = first study, DEEP = second study
 
-if (data.hasEntry(blockId)) {
-    KnowledgeLevel level = data.getLevel(blockId); // BASIC or DEEP
+boolean unlocked = data.isUnlocked(Identifier.fromNamespaceAndPath("yourmod", "my_page"));
+```
+
+`isUnlocked` returns `true` for entries whose unlock condition has been satisfied. Entries without an unlock condition are always shown but not tracked in `unlockedEntries`.
+
+---
+
+## 7. ScribbleBookAPI
+
+`ScribbleBookAPI` is the public facade. Call it during your mod's constructor (before datapacks load).
+
+### Register a custom unlock condition type
+
+```java
+ScribbleBookAPI.registerConditionType("yourmod:kills", MyKillsCondition.MAP_CODEC);
+```
+
+Datapacks can then use `"type": "yourmod:kills"` in any `unlock` field.
+
+Your condition class must implement `UnlockCondition`:
+
+```java
+public record MyKillsCondition(int required) implements UnlockCondition {
+
+    public static final MapCodec<MyKillsCondition> MAP_CODEC = RecordCodecBuilder.mapCodec(i ->
+            i.group(Codec.INT.fieldOf("required").forGetter(MyKillsCondition::required))
+            .apply(i, MyKillsCondition::new));
+
+    @Override public String type() { return "yourmod:kills"; }
+
+    @Override
+    public boolean isMet(BookData bookData, ServerPlayer player) {
+        return MyKillTracker.getKills(player) >= required;
+    }
 }
 ```
 
-### KnowledgeLevel values
+### Trigger re-evaluation manually
 
-| Value | Meaning |
-|-------|---------|
-| `BASIC` | Player has studied the entry once |
-| `DEEP` | Player has studied the entry twice (full knowledge) |
-| `null` | Entry has not been studied |
-
----
-
-## 9. Default Study Costs
-
-The server operator configures costs in `config/scribble_book-common.toml`:
-
-| Config key | Default | Description |
-|------------|---------|-------------|
-| `basicInkCost` | 10 | Ink units for first study |
-| `basicPaperCost` | 1 | Paper sheets for first study |
-| `deepInkCost` | 30 | Ink units for second study |
-| `deepPaperCost` | 1 | Paper sheets for second study |
-
-One ink bottle holds **100 units**. When depleted it becomes an empty bottle.
-
----
-
-## 10. Soft Dependency Pattern
-
-If Scribble Book is optional for your mod, guard all API calls:
+Call this after an external event that may satisfy a condition (e.g. your kill tracker updates):
 
 ```java
-public static final boolean SCRIBBLE_BOOK_LOADED =
-    ModList.get().isLoaded("scribble_book");
+// Re-evaluate a specific book stack
+ScribbleBookAPI.reEvaluateBookUnlocks(serverPlayer, bookStack);
 
-// Then at call sites:
-if (SCRIBBLE_BOOK_LOADED) {
-    ScribbleBookCompat.register();
-}
+// Re-evaluate all books in player's inventory
+ScribbleBookAPI.reEvaluateAllBooks(serverPlayer);
+```
+
+---
+
+## 8. Soft Dependency Pattern
+
+```java
+public static final boolean SCRIBBLE_BOOK = ModList.get().isLoaded("scribble_book");
+
+// At call sites:
+if (SCRIBBLE_BOOK) ScribbleBookCompat.register();
 ```
 
 Keep all Scribble Book imports inside a separate `ScribbleBookCompat` class so the JVM only loads it when the mod is present.
 
 ---
 
-## 11. Minimal Example
+## 9. Default Study Costs
 
-```
-data/
-  yourmod/
-    scribble_book/
-      blocks/
-        magic_furnace.json
-        crystal_table.json
-      entities/
-        fire_sprite.json
-      aliases/
-        blocks.json
+Configured in `config/scribble_book-common.toml`:
 
-assets/
-  yourmod/
-    lang/
-      en_us.json
-```
+| Key | Default | Description |
+|-----|---------|-------------|
+| `basicInkCost` | 10 | Ink units for first study |
+| `basicPaperCost` | 1 | Paper sheets for first study |
+| `deepInkCost` | 30 | Ink units for second study |
+| `deepPaperCost` | 1 | Paper sheets for second study |
 
-`magic_furnace.json`:
-```json
-{
-  "title": "yourmod.entry.magic_furnace.title",
-  "basic": "yourmod.entry.magic_furnace.basic",
-  "deep":  "yourmod.entry.magic_furnace.deep",
-  "sneak_only": false
-}
-```
-
-`fire_sprite.json`:
-```json
-{
-  "title": "yourmod.entity.fire_sprite.title",
-  "basic": "yourmod.entity.fire_sprite.basic",
-  "sneak_only": true
-}
-```
-
-`aliases/blocks.json` (redirect all coloured variants to one entry):
-```json
-{
-  "yourmod:red_crystal_lamp":   "yourmod:crystal_lamp",
-  "yourmod:blue_crystal_lamp":  "yourmod:crystal_lamp",
-  "yourmod:green_crystal_lamp": "yourmod:crystal_lamp"
-}
-```
-
-`en_us.json` (excerpt):
-```json
-{
-  "yourmod.entry.magic_furnace.title": "Magic Furnace",
-  "yourmod.entry.magic_furnace.basic": "Smelts items using ambient mana. Requires no fuel.",
-  "yourmod.entry.magic_furnace.deep":  "Output speed scales with local mana density. Place near a mana pool for best results.",
-  "yourmod.entity.fire_sprite.title": "Fire Sprite",
-  "yourmod.entity.fire_sprite.basic": "A small elemental that ignites nearby blocks. Immune to fire damage."
-}
-```
-
-That's all — no Java required for basic integration.
+One ink bottle holds **100 units**. When depleted it becomes an empty bottle.
