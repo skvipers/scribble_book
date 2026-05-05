@@ -14,7 +14,6 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -56,7 +55,6 @@ public class ScribbleBook {
         NeoForge.EVENT_BUS.addListener(ScribbleBookItem::onEntityInteract);
         NeoForge.EVENT_BUS.addListener(ScribbleBookCommand::register);
         NeoForge.EVENT_BUS.addListener(ScribbleBook::onEntityKilled);
-        NeoForge.EVENT_BUS.addListener(ScribbleBook::onItemPickup);
     }
 
     private void onBuildCreativeTab(BuildCreativeModeTabContentsEvent event) {
@@ -76,12 +74,6 @@ public class ScribbleBook {
 
     private static void onEntityKilled(LivingDeathEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayer sp) {
-            ScribbleBookAPI.reEvaluateAllBooks(sp);
-        }
-    }
-
-    private static void onItemPickup(EntityItemPickupEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer sp) {
             ScribbleBookAPI.reEvaluateAllBooks(sp);
         }
     }

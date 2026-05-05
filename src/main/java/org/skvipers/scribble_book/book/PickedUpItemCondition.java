@@ -24,6 +24,6 @@ public record PickedUpItemCondition(Identifier item, int count) implements Unloc
     public boolean isMet(BookData bookData, ServerPlayer player) {
         Item itemType = BuiltInRegistries.ITEM.getOptional(item).orElse(null);
         if (itemType == null) return false;
-        return player.getStats().getValue(Stats.PICKED_UP.get(itemType)) >= count;
+        return player.getStats().getValue(Stats.ITEM_PICKED_UP.get(itemType)) >= count;
     }
 }
