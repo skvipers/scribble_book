@@ -25,6 +25,9 @@ mods/
 # === Claude Code ===
 .claude/
 
+# === Local edits (not for commit) ===
+CHANGELOG.md
+
 # === OS files ===
 .DS_Store
 Thumbs.db
