@@ -5,14 +5,16 @@ import com.mojang.serialization.MapCodec;
 
 import java.util.Map;
 
-public sealed interface ContentBlock permits TextBlock, ItemBlock, ImageBlock {
+public sealed interface ContentBlock permits TextBlock, ItemBlock, ImageBlock, ItemsBlock, RecipeBlock {
 
     String type();
 
     Map<String, MapCodec<? extends ContentBlock>> TYPES = Map.of(
-            "text",  TextBlock.MAP_CODEC,
-            "item",  ItemBlock.MAP_CODEC,
-            "image", ImageBlock.MAP_CODEC
+            "text",   TextBlock.MAP_CODEC,
+            "item",   ItemBlock.MAP_CODEC,
+            "image",  ImageBlock.MAP_CODEC,
+            "items",  ItemsBlock.MAP_CODEC,
+            "recipe", RecipeBlock.MAP_CODEC
     );
 
     Codec<ContentBlock> CODEC = Codec.STRING

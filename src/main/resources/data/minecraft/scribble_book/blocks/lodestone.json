@@ -1,5 +1,18 @@
 {
   "title": "scribble_book.entry.minecraft.lodestone.title",
-  "basic": "scribble_book.entry.minecraft.lodestone.basic",
-  "deep":  "scribble_book.entry.minecraft.lodestone.deep"
+  "sections": [
+    {
+      "level": "basic",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.entry.minecraft.lodestone.basic" }
+      ]
+    },
+    {
+      "level": "deep",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.entry.minecraft.lodestone.deep" },
+        { "type": "recipe", "output": "minecraft:lodestone", "grid": ["minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks","minecraft:netherite_ingot","minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks","minecraft:chiseled_stone_bricks"] }
+      ]
+    }
+  ]
 }

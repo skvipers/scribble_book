@@ -1,4 +1,4 @@
-Ь# Scribble Book — Datapack Guide
+# Scribble Book — Datapack Guide
 
 This guide covers everything a modpack developer needs to add entries, categories, custom pages, and unlock conditions through datapacks — no Java required.
 
@@ -54,9 +54,11 @@ All entry types (blocks, entities, items, custom) use the same JSON format.
     {
       "level": "deep",
       "blocks": [
-        { "type": "text",  "text": "mypack.entry.reactor_core.deep" },
-        { "type": "item",  "item": "mypack:reactor_core" },
-        { "type": "image", "texture": "mypack:textures/gui/reactor_diagram.png", "width": 128, "height": 64 }
+        { "type": "text",   "text": "mypack.entry.reactor_core.deep" },
+        { "type": "item",   "item": "mypack:reactor_core" },
+        { "type": "image",  "texture": "mypack:textures/gui/reactor_diagram.png", "width": 128, "height": 64, "align": "center" },
+        { "type": "items",  "items": ["minecraft:iron_ingot", "mypack:coil"], "background": true },
+        { "type": "recipe", "output": "mypack:reactor_core", "grid": ["mypack:coil","mypack:coil","mypack:coil","mypack:coil","minecraft:iron_block","mypack:coil","mypack:coil","mypack:coil","mypack:coil"] }
       ]
     }
   ]
@@ -83,9 +85,7 @@ Any `title` or `text` value is looked up as a lang key first. If no translation 
 
 ## 3. Content Blocks
 
-> **Note:** as of 0.4.0 only `text` blocks are rendered. `item` and `image` are parsed and stored but not yet displayed. They are documented here for forward compatibility — support is planned for a future release.
-
-Each section's `blocks` array can contain any mix of the three block types.
+Each section's `blocks` array can contain any mix of the five block types.
 
 ### `text`
 
@@ -93,7 +93,7 @@ Each section's `blocks` array can contain any mix of the three block types.
 { "type": "text", "text": "mypack.entry.my_entry.description" }
 ```
 
-Supports lang keys or literal strings.
+Supports lang keys or literal strings. Use `\n` for line breaks within a single block.
 
 ### `item`
 
@@ -101,21 +101,72 @@ Supports lang keys or literal strings.
 { "type": "item", "item": "minecraft:diamond" }
 ```
 
-Renders an item icon. The value is a registry ID (`namespace:path`).
+Renders one item icon with its hover name on the same line.
 
 ### `image`
 
 ```json
-{ "type": "image", "texture": "mypack:textures/gui/my_image.png", "width": 128, "height": 64 }
+{
+  "type": "image",
+  "texture": "mypack:textures/gui/my_image.png",
+  "width": 128,
+  "height": 64,
+  "align": "center"
+}
 ```
 
 | Field | Default | Description |
 |---|---|---|
 | `texture` | required | Resource location of the texture file |
-| `width` | `0` | Display width in pixels (0 = use texture native width) |
-| `height` | `0` | Display height in pixels (0 = use texture native height) |
+| `width` | `0` | Display width in pixels. `0` = fill page width |
+| `height` | `0` | Display height in pixels. `0` = same as width |
+| `align` | `"left"` | Horizontal alignment: `"left"`, `"center"`, `"right"` |
 
-Place the texture at `assets/<namespace>/textures/gui/my_image.png` inside your datapack/resource pack.
+Place the texture at `assets/<namespace>/textures/<path>.png` inside your resource pack. Both width and height can be omitted if you want the image to fill the full page width.
+
+### `items`
+
+Displays a row of item icons with optional slot backgrounds. Items are split into rows automatically if they exceed the page width.
+
+```json
+{
+  "type": "items",
+  "items": ["minecraft:iron_ingot", "minecraft:gold_ingot", "minecraft:diamond"],
+  "background": true,
+  "align": "center",
+  "gap": 1
+}
+```
+
+| Field | Default | Description |
+|---|---|---|
+| `items` | required | List of item registry IDs |
+| `background` | `true` | Render slot background behind each item |
+| `align` | `"center"` | Row alignment: `"left"`, `"center"`, `"right"` |
+| `gap` | `1` | Pixel gap between slots |
+
+### `recipe`
+
+Displays a 3×3 crafting grid with an arrow and output slot. The layout is static — you supply the items directly rather than referencing a recipe ID.
+
+```json
+{
+  "type": "recipe",
+  "output": "minecraft:golden_apple",
+  "grid": [
+    "minecraft:gold_ingot", "minecraft:gold_ingot", "minecraft:gold_ingot",
+    "minecraft:gold_ingot", "minecraft:apple",      "minecraft:gold_ingot",
+    "minecraft:gold_ingot", "minecraft:gold_ingot", "minecraft:gold_ingot"
+  ]
+}
+```
+
+| Field | Default | Description |
+|---|---|---|
+| `output` | required | Registry ID of the crafted result |
+| `grid` | required | 9-element list of item IDs, row-major (top-left → bottom-right). Use `""` for empty slots |
+
+For shapeless or shaped recipes that don't fill all 9 slots, put the ingredients in the occupied positions and leave the rest as `""`.
 
 ---
 

@@ -1,6 +1,19 @@
 {
   "title": "scribble_book.item.minecraft.recovery_compass.title",
-  "basic": "scribble_book.item.minecraft.recovery_compass.basic",
-  "deep":  "scribble_book.item.minecraft.recovery_compass.deep",
+  "sections": [
+    {
+      "level": "basic",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.item.minecraft.recovery_compass.basic" },
+        { "type": "recipe", "output": "minecraft:recovery_compass", "grid": ["minecraft:echo_shard","minecraft:echo_shard","minecraft:echo_shard","minecraft:echo_shard","minecraft:compass","minecraft:echo_shard","minecraft:echo_shard","minecraft:echo_shard","minecraft:echo_shard"] }
+      ]
+    },
+    {
+      "level": "deep",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.item.minecraft.recovery_compass.deep" }
+      ]
+    }
+  ],
   "sneak_only": false
 }

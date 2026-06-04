@@ -1,6 +1,19 @@
 {
   "title": "scribble_book.item.minecraft.golden_apple.title",
-  "basic": "scribble_book.item.minecraft.golden_apple.basic",
-  "deep":  "scribble_book.item.minecraft.golden_apple.deep",
+  "sections": [
+    {
+      "level": "basic",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.item.minecraft.golden_apple.basic" },
+        { "type": "recipe", "output": "minecraft:golden_apple", "grid": ["minecraft:gold_ingot","minecraft:gold_ingot","minecraft:gold_ingot","minecraft:gold_ingot","minecraft:apple","minecraft:gold_ingot","minecraft:gold_ingot","minecraft:gold_ingot","minecraft:gold_ingot"] }
+      ]
+    },
+    {
+      "level": "deep",
+      "blocks": [
+        { "type": "text", "text": "scribble_book.item.minecraft.golden_apple.deep" }
+      ]
+    }
+  ],
   "sneak_only": false
 }

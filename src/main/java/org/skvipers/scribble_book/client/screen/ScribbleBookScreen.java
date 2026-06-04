@@ -22,7 +22,11 @@ import org.skvipers.scribble_book.book.BookEntryLoader;
 import org.skvipers.scribble_book.book.ContentBlock;
 import org.skvipers.scribble_book.book.CustomEntryLoader;
 import org.skvipers.scribble_book.book.EntityEntryLoader;
+import org.skvipers.scribble_book.book.ImageBlock;
+import org.skvipers.scribble_book.book.ItemBlock;
 import org.skvipers.scribble_book.book.ItemEntryLoader;
+import org.skvipers.scribble_book.book.ItemsBlock;
+import org.skvipers.scribble_book.book.RecipeBlock;
 import org.skvipers.scribble_book.book.KnowledgeLevel;
 import org.skvipers.scribble_book.book.TextBlock;
 import org.skvipers.scribble_book.registry.ModDataComponents;
@@ -39,6 +43,7 @@ public class ScribbleBookScreen extends Screen {
     private static final Identifier SPR_PAGE_NEXT_HOV= Identifier.fromNamespaceAndPath("minecraft", "widget/page_forward_highlighted");
     private static final Identifier SPR_SCROLL_UP    = Identifier.fromNamespaceAndPath("minecraft", "statistics/sort_up");
     private static final Identifier SPR_SCROLL_DOWN  = Identifier.fromNamespaceAndPath("minecraft", "statistics/sort_down");
+    private static final Identifier CELL_TEXTURE     = Identifier.fromNamespaceAndPath(ScribbleBook.MODID, "textures/gui/cell.png");
 
     // --- Book layout ---
     private static final int TEX_W      = 295;
@@ -81,6 +86,17 @@ public class ScribbleBookScreen extends Screen {
     private static final int COL_SEL_BG = 0x33000000;
     private static final int COL_SEP    = 0xFF8B6914;
 
+    // --- Render elements ---
+    private sealed interface RenderElement
+            permits RenderElement.TextLine, RenderElement.ItemLine, RenderElement.ImageLine,
+                    RenderElement.ItemsRowLine, RenderElement.RecipeLine {
+        record TextLine(FormattedCharSequence seq) implements RenderElement {}
+        record ItemLine(ItemStack stack) implements RenderElement {}
+        record ImageLine(Identifier texture, int drawW, int drawH, int xOffset) implements RenderElement {}
+        record ItemsRowLine(List<ItemStack> stacks, boolean bg, int xOffset, int gap) implements RenderElement {}
+        record RecipeLine(ItemStack[] grid, ItemStack output) implements RenderElement {}
+    }
+
     // --- Tab group ---
     private record TabGroup(String namespace, ItemStack icon, List<Map.Entry<Identifier, BookEntry>> entries) {}
 
@@ -92,7 +108,7 @@ public class ScribbleBookScreen extends Screen {
     private int tabScroll       = 0;   // how many tab slots scrolled down
     private int selectedIndex   = 0;
     private int entryPage       = 0;
-    private int contentLine     = 0;
+    private int contentScrollY  = 0;   // pixel offset for content scroll
 
     // Current tab's entry list (reference into tabs.get(selectedTab))
     private List<Map.Entry<Identifier, BookEntry>> entries = List.of();
@@ -100,14 +116,15 @@ public class ScribbleBookScreen extends Screen {
     // Computed in init()
     private int bookX, bookY;
     private int entriesPerPage;
-    private int maxContentLines;
-    private int tabsPerSide;  // max tab rows on one side
+    private int maxContentH;   // pixel height of the content area on the right page
+    private int tabsPerSide;   // max tab rows on one side
 
     // Absolute button rects
     private int prevBtnX, prevBtnY, nextBtnX, nextBtnY;
     private int upBtnX, upBtnY, downBtnX, downBtnY;
 
-    private List<FormattedCharSequence> contentLines = List.of();
+    private List<RenderElement> renderElements = List.of();
+    private int totalContentH = 0;
     private int scribbleEntryListY;
 
     // -------------------------------------------------------------------------
@@ -219,12 +236,12 @@ public class ScribbleBookScreen extends Screen {
         bookY = (height - BOOK_H) / 2;
 
         Font font = Minecraft.getInstance().font;
-        entriesPerPage  = L_TEXT_H / (font.lineHeight + 2);
+        entriesPerPage = L_TEXT_H / (font.lineHeight + 2);
         // title (lineHeight+3) + separator (1+4) = lineHeight+8 consumed before content
-        maxContentLines = (R_TEXT_H - font.lineHeight - 8) / font.lineHeight;
+        maxContentH    = R_TEXT_H - font.lineHeight - 8;
         // progress section: label(lH+2) + bar(5+2) + pct(lH+3) + separator(1+4)
         scribbleEntryListY = bookY + L_TEXT_Y + font.lineHeight + 2 + 5 + 2 + font.lineHeight + 3 + 1 + 4;
-        tabsPerSide     = Math.min(8, (BOOK_H - TAB_TOP) / (TAB_H + TAB_GAP));
+        tabsPerSide    = Math.min(8, (BOOK_H - TAB_TOP) / (TAB_H + TAB_GAP));
 
         int navY = bookY + L_TEXT_Y + L_TEXT_H + 4;
         prevBtnX = bookX + L_TEXT_X;
@@ -237,7 +254,7 @@ public class ScribbleBookScreen extends Screen {
         upBtnX   = downBtnX;
         upBtnY   = downBtnY - SCROLL_BTN_H - 2 + 11;
 
-        rebuildContentLines(font);
+        rebuildRenderElements(font);
     }
 
     // -------------------------------------------------------------------------
@@ -469,15 +486,67 @@ public class ScribbleBookScreen extends Screen {
         gui.fill(rx, ry, rx + R_TEXT_W, ry + 1, COL_SEP);
         ry += 4;
 
-        int end = Math.min(contentLine + maxContentLines, contentLines.size());
-        for (int i = contentLine; i < end; i++) {
-            gui.text(font, contentLines.get(i), rx, ry, COL_TEXT, false);
-            ry += font.lineHeight;
-        }
+        int contentStartY = ry;
+        gui.enableScissor(rx, contentStartY, rx + R_TEXT_W, contentStartY + maxContentH);
+        int curY = 0;
+        for (RenderElement el : renderElements) {
+            int elH = elHeight(el, font);
+            if (curY + elH <= contentScrollY) { curY += elH; continue; }
+            if (curY >= contentScrollY + maxContentH) break;
 
-        if (contentLine > 0)
+            int drawY = contentStartY + (curY - contentScrollY);
+            switch (el) {
+                case RenderElement.TextLine tl ->
+                    gui.text(font, tl.seq(), rx, drawY, COL_TEXT, false);
+                case RenderElement.ItemLine il -> {
+                    if (!il.stack().isEmpty()) {
+                        gui.fakeItem(il.stack(), rx, drawY + 1);
+                        gui.text(font, il.stack().getHoverName().getVisualOrderText(),
+                                rx + 18, drawY + (18 - font.lineHeight) / 2, COL_TEXT, false);
+                    }
+                }
+                case RenderElement.ImageLine img ->
+                    gui.blit(RenderPipelines.GUI_TEXTURED, img.texture(),
+                            rx + img.xOffset(), drawY + 2, 0, 0, img.drawW(), img.drawH(), img.drawW(), img.drawH());
+                case RenderElement.ItemsRowLine row -> {
+                    int x = rx + row.xOffset();
+                    for (ItemStack stack : row.stacks()) {
+                        if (row.bg())
+                            gui.blit(RenderPipelines.GUI_TEXTURED, CELL_TEXTURE, x, drawY, 0, 0, 26, 26, 26, 26);
+                        if (!stack.isEmpty()) gui.fakeItem(stack, x + 5, drawY + 5);
+                        x += 26 + row.gap();
+                    }
+                }
+                case RenderElement.RecipeLine rl -> {
+                    String arrow = "→";
+                    int arrowW = font.width(arrow);
+                    int totalW = 78 + 4 + arrowW + 4 + 26;
+                    int gx = rx + Math.max(0, (R_TEXT_W - totalW) / 2);
+                    int gy = drawY + 2;
+                    for (int row = 0; row < 3; row++) {
+                        for (int col = 0; col < 3; col++) {
+                            int sx = gx + col * 26, sy = gy + row * 26;
+                            gui.blit(RenderPipelines.GUI_TEXTURED, CELL_TEXTURE, sx, sy, 0, 0, 26, 26, 26, 26);
+                            ItemStack item = rl.grid()[row * 3 + col];
+                            if (!item.isEmpty()) gui.fakeItem(item, sx + 5, sy + 5);
+                        }
+                    }
+                    int arrowX = gx + 78 + 4;
+                    int arrowY = gy + 39 - font.lineHeight / 2;
+                    gui.text(font, arrow, arrowX, arrowY, COL_TEXT, false);
+                    int ox = arrowX + arrowW + 4;
+                    int oy = gy + (78 - 26) / 2;
+                    gui.blit(RenderPipelines.GUI_TEXTURED, CELL_TEXTURE, ox, oy, 0, 0, 26, 26, 26, 26);
+                    if (!rl.output().isEmpty()) gui.fakeItem(rl.output(), ox + 5, oy + 5);
+                }
+            }
+            curY += elH;
+        }
+        gui.disableScissor();
+
+        if (contentScrollY > 0)
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, SPR_SCROLL_UP,   upBtnX,   upBtnY,   SCROLL_BTN_W, SCROLL_BTN_H);
-        if (contentLine + maxContentLines < contentLines.size())
+        if (contentScrollY + maxContentH < totalContentH)
             gui.blitSprite(RenderPipelines.GUI_TEXTURED, SPR_SCROLL_DOWN, downBtnX, downBtnY, SCROLL_BTN_W, SCROLL_BTN_H);
     }
 
@@ -536,18 +605,19 @@ public class ScribbleBookScreen extends Screen {
         }
 
         // --- Content scroll ---
-        if (contentLine > 0 && isHovered(mx, my, upBtnX, upBtnY, SCROLL_BTN_W, SCROLL_BTN_H)) {
-            contentLine--;
+        Font font  = Minecraft.getInstance().font;
+        int step   = font.lineHeight;
+        if (contentScrollY > 0 && isHovered(mx, my, upBtnX, upBtnY, SCROLL_BTN_W, SCROLL_BTN_H)) {
+            contentScrollY = Math.max(0, contentScrollY - step);
             return true;
         }
-        if (contentLine + maxContentLines < contentLines.size()
+        if (contentScrollY + maxContentH < totalContentH
                 && isHovered(mx, my, downBtnX, downBtnY, SCROLL_BTN_W, SCROLL_BTN_H)) {
-            contentLine++;
+            contentScrollY = Math.min(totalContentH - maxContentH, contentScrollY + step);
             return true;
         }
 
         // --- Entry click ---
-        Font font  = Minecraft.getInstance().font;
         int entryH = font.lineHeight + 2;
         int lx     = bookX + L_TEXT_X;
         int ly     = isScribbleTab() ? scribbleEntryListY : bookY + L_TEXT_Y;
@@ -568,8 +638,15 @@ public class ScribbleBookScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mx, double my, double dx, double dy) {
-        if (dy > 0 && contentLine > 0) { contentLine--; return true; }
-        if (dy < 0 && contentLine + maxContentLines < contentLines.size()) { contentLine++; return true; }
+        int step = Minecraft.getInstance().font.lineHeight * 3;
+        if (dy > 0 && contentScrollY > 0) {
+            contentScrollY = Math.max(0, contentScrollY - step);
+            return true;
+        }
+        if (dy < 0 && contentScrollY + maxContentH < totalContentH) {
+            contentScrollY = Math.min(totalContentH - maxContentH, contentScrollY + step);
+            return true;
+        }
         return false;
     }
 
@@ -577,50 +654,136 @@ public class ScribbleBookScreen extends Screen {
 
     private void selectTab(int idx) {
         if (idx < 0 || idx >= tabs.size()) return;
-        selectedTab   = idx;
-        entries       = tabs.get(idx).entries();
-        selectedIndex = 0;
-        entryPage     = 0;
-        contentLine   = 0;
-        rebuildContentLines(Minecraft.getInstance().font);
+        selectedTab    = idx;
+        entries        = tabs.get(idx).entries();
+        selectedIndex  = 0;
+        entryPage      = 0;
+        contentScrollY = 0;
+        rebuildRenderElements(Minecraft.getInstance().font);
     }
 
     private void selectEntry(int idx) {
         if (idx < 0 || idx >= entries.size()) return;
-        selectedIndex = idx;
-        contentLine   = 0;
-        rebuildContentLines(Minecraft.getInstance().font);
+        selectedIndex  = idx;
+        contentScrollY = 0;
+        rebuildRenderElements(Minecraft.getInstance().font);
     }
 
-    private void rebuildContentLines(Font font) {
-        if (entries.isEmpty()) { contentLines = List.of(); return; }
+    private void rebuildRenderElements(Font font) {
+        if (entries.isEmpty()) { renderElements = List.of(); totalContentH = 0; return; }
         var selected = entries.get(selectedIndex);
         BookEntry entry = selected.getValue();
-
         net.minecraft.locale.Language lang = net.minecraft.locale.Language.getInstance();
 
-        // Always-visible entries shown in full; studied entries depend on knowledge level
-        String text;
+        List<ContentBlock> blocks;
         if (entry.alwaysVisible()) {
-            text = blocksToText(lang, entry.getBlocks(KnowledgeLevel.BASIC));
+            blocks = entry.getBlocks(KnowledgeLevel.BASIC);
         } else {
             BookData data = bookStack.getOrDefault(ModDataComponents.BOOK_DATA.get(), BookData.EMPTY);
             KnowledgeLevel lvl = data.getLevel(selected.getKey());
-            String basicText = blocksToText(lang, entry.getBlocks(KnowledgeLevel.BASIC));
             if (lvl == KnowledgeLevel.DEEP && entry.hasDeepSection()) {
-                String deepText = blocksToText(lang, entry.getBlocks(KnowledgeLevel.DEEP));
-                text = basicText + "\n\n" + deepText;
+                List<ContentBlock> combined = new ArrayList<>();
+                combined.addAll(entry.getBlocks(KnowledgeLevel.BASIC));
+                combined.addAll(entry.getBlocks(KnowledgeLevel.DEEP));
+                blocks = combined;
             } else {
-                text = basicText;
+                blocks = entry.getBlocks(KnowledgeLevel.BASIC);
             }
         }
 
-        List<FormattedCharSequence> lines = new ArrayList<>();
-        for (String paragraph : text.split("\n")) {
-            if (paragraph.isBlank()) lines.add(FormattedCharSequence.EMPTY);
-            else                     lines.addAll(font.split(FormattedText.of(paragraph), R_TEXT_W));
+        List<RenderElement> elements = new ArrayList<>();
+        boolean firstBlock = true;
+        for (ContentBlock block : blocks) {
+            if (!firstBlock) elements.add(new RenderElement.TextLine(FormattedCharSequence.EMPTY));
+            firstBlock = false;
+
+            if (block instanceof TextBlock t) {
+                String text = resolve(lang, t.text());
+                for (String para : text.split("\n", -1)) {
+                    if (para.isBlank()) elements.add(new RenderElement.TextLine(FormattedCharSequence.EMPTY));
+                    else font.split(FormattedText.of(para), R_TEXT_W)
+                             .forEach(seq -> elements.add(new RenderElement.TextLine(seq)));
+                }
+            } else if (block instanceof ItemBlock ib) {
+                ItemStack stack = BuiltInRegistries.ITEM.getOptional(ib.item())
+                        .filter(item -> item != Items.AIR)
+                        .map(ItemStack::new)
+                        .orElse(ItemStack.EMPTY);
+                elements.add(new RenderElement.ItemLine(stack));
+            } else if (block instanceof ImageBlock img) {
+                int dw, dh;
+                if (img.width() <= 0 && img.height() <= 0) {
+                    dw = R_TEXT_W; dh = R_TEXT_W;
+                } else if (img.width() > 0 && img.height() > 0) {
+                    if (img.width() > R_TEXT_W) {
+                        dw = R_TEXT_W;
+                        dh = img.height() * R_TEXT_W / img.width();
+                    } else {
+                        dw = img.width(); dh = img.height();
+                    }
+                } else if (img.width() > 0) {
+                    dw = Math.min(img.width(), R_TEXT_W); dh = dw;
+                } else {
+                    dw = R_TEXT_W; dh = img.height();
+                }
+                int xOffset = switch (img.align()) {
+                    case "center" -> (R_TEXT_W - dw) / 2;
+                    case "right"  -> R_TEXT_W - dw;
+                    default       -> 0;
+                };
+                elements.add(new RenderElement.ImageLine(img.texture(), dw, dh, xOffset));
+            } else if (block instanceof ItemsBlock ib) {
+                int gap = ib.gap();
+                int cellStep = 26 + gap;
+                int perRow = Math.max(1, (R_TEXT_W + gap) / cellStep);
+                List<ItemStack> stacks = ib.items().stream()
+                        .map(id -> BuiltInRegistries.ITEM.getOptional(id)
+                                .filter(item -> item != Items.AIR)
+                                .map(ItemStack::new)
+                                .orElse(ItemStack.EMPTY))
+                        .toList();
+                for (int i = 0; i < stacks.size(); i += perRow) {
+                    List<ItemStack> row = stacks.subList(i, Math.min(i + perRow, stacks.size()));
+                    int rowW = row.size() * 26 + (row.size() - 1) * gap;
+                    int xOffset = switch (ib.align()) {
+                        case "right"  -> R_TEXT_W - rowW;
+                        case "center" -> (R_TEXT_W - rowW) / 2;
+                        default       -> 0;
+                    };
+                    elements.add(new RenderElement.ItemsRowLine(row, ib.background(), Math.max(0, xOffset), gap));
+                }
+            } else if (block instanceof RecipeBlock rb) {
+                ItemStack[] grid = new ItemStack[9];
+                List<String> slots = rb.grid();
+                for (int i = 0; i < 9; i++) {
+                    String id = i < slots.size() ? slots.get(i) : "";
+                    grid[i] = (id == null || id.isEmpty()) ? ItemStack.EMPTY
+                            : BuiltInRegistries.ITEM.getOptional(Identifier.parse(id))
+                                    .filter(item -> item != Items.AIR)
+                                    .map(ItemStack::new)
+                                    .orElse(ItemStack.EMPTY);
+                }
+                ItemStack output = BuiltInRegistries.ITEM.getOptional(rb.output())
+                        .filter(item -> item != Items.AIR)
+                        .map(ItemStack::new)
+                        .orElse(ItemStack.EMPTY);
+                elements.add(new RenderElement.RecipeLine(grid, output));
+            }
         }
-        contentLines = lines;
+
+        renderElements = elements;
+        totalContentH  = 0;
+        for (RenderElement el : elements) totalContentH += elHeight(el, font);
+    }
+
+    private int elHeight(RenderElement el, Font font) {
+        return switch (el) {
+            case RenderElement.TextLine t    -> font.lineHeight;
+            case RenderElement.ItemLine i    -> 18;
+            case RenderElement.ImageLine il  -> il.drawH() + 4;
+            case RenderElement.ItemsRowLine r -> 26;
+            case RenderElement.RecipeLine r  -> 82;
+        };
     }
 
     private int totalEntryPages() {
@@ -630,19 +793,6 @@ public class ScribbleBookScreen extends Screen {
     /** Resolves a string as a lang key if it exists, otherwise returns it as-is. */
     private static String resolve(net.minecraft.locale.Language lang, String key) {
         return lang.has(key) ? lang.getOrDefault(key) : key;
-    }
-
-    private static String blocksToText(net.minecraft.locale.Language lang, List<ContentBlock> blocks) {
-        if (blocks.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (ContentBlock b : blocks) {
-            if (b instanceof TextBlock t) {
-                if (!sb.isEmpty()) sb.append("\n\n");
-                sb.append(resolve(lang, t.text()));
-            }
-            // ItemBlock and ImageBlock are stubs in 0.4 — skipped
-        }
-        return sb.toString();
     }
 
     private boolean isHovered(int mx, int my, int x, int y, int w, int h) {

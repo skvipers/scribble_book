@@ -27,7 +27,7 @@
   "scribble_book.command.complete": "Your Scribble Book is 100%% complete!",
 
   "scribble_book.guide.title": "Scribble Book",
-  "scribble_book.guide.text": "This book lets you record observations about blocks, entities, and items.\n\nTo study a block or mob, hold the book and press Shift + Right-Click on it. To study a dropped item, hold the book in one hand and a spyglass in the other \u2014 zoom in and the book will automatically study whatever you are looking at.\n\nThe first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units. Refill it by crafting: empty bottle + 2 ink sacs.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.",
+  "scribble_book.guide.text": "This book lets you record observations about blocks, entities, and items.\n\nTo study a block or mob, hold the book and press Shift + Right-Click on it. To study a dropped item, hold the book in one hand and a spyglass in the other \u2014 zoom in and the book will automatically study whatever you are looking at.\n\nThe first study records basic notes; the second adds deeper insight.\n\nEach study costs ink and paper. One ink bottle holds 100 units.\n\nEntries are organised into tabs on the sides of the book. \u2022 = basic level, \u2726 = deep level.\n\nThe book holds all your knowledge \u2014 lose it and you lose everything. Enchant it with Soulbound as soon as you can.",
 
   "scribble_book.entry.minecraft.furnace.title": "Furnace",
   "scribble_book.entry.minecraft.furnace.basic": "A furnace converts raw materials into refined goods using fuel. Place fuel in the bottom slot and the item to smelt in the top.",
@@ -151,7 +151,7 @@
 
   "scribble_book.entry.minecraft.lodestone.title": "Lodestone",
   "scribble_book.entry.minecraft.lodestone.basic": "Right-clicking a lodestone with a compass links the compass to that lodestone. The compass will then point to the lodestone regardless of dimension, as long as the lodestone still exists.",
-  "scribble_book.entry.minecraft.lodestone.deep": "Lodestone compasses work across dimensions — you can set one in the Nether and track it from the Overworld. If the lodestone is destroyed, the compass spins aimlessly. Lodestones are crafted with a netherite ingot surrounded by chiseled stone bricks.",
+  "scribble_book.entry.minecraft.lodestone.deep": "Lodestone compasses work across dimensions — you can set one in the Nether and track it from the Overworld. If the lodestone is destroyed, the compass spins aimlessly.",
 
   "scribble_book.entry.minecraft.piston.title": "Piston",
   "scribble_book.entry.minecraft.piston.basic": "Pistons extend one block when powered by a redstone signal, pushing up to 12 blocks in a chain. A sticky piston also pulls the adjacent block back when it retracts. They face the direction you look when placed.",
@@ -318,7 +318,7 @@
   "scribble_book.item.minecraft.ender_pearl.deep": "Ender pearls function in all three dimensions. A thrown pearl is a persistent entity — if the target chunk loads before the pearl lands, the teleportation still occurs. Throwing a pearl just before fatal damage teleports you to safety instead of dying. Combines with a blaze powder to craft an Eye of Ender, needed to locate and open a stronghold.",
 
   "scribble_book.item.minecraft.golden_apple.title": "Golden Apple",
-  "scribble_book.item.minecraft.golden_apple.basic": "Eating a golden apple grants Absorption I (4 extra hearts for 2 min) and Regeneration II for 5 seconds. Crafted from an apple surrounded by 8 gold ingots.",
+  "scribble_book.item.minecraft.golden_apple.basic": "Eating a golden apple grants Absorption I (4 extra hearts for 2 min) and Regeneration II for 5 seconds.",
   "scribble_book.item.minecraft.golden_apple.deep": "Critical use: throwing a Splash Potion of Weakness at a Zombie Villager and then right-clicking it with a golden apple cures it into a regular villager over 2–5 minutes. A cured villager permanently discounts its trades with the player who cured it — typically down to 1 emerald per trade. Essential for efficient trading halls.",
 
   "scribble_book.item.minecraft.enchanted_golden_apple.title": "Enchanted Golden Apple",
@@ -346,7 +346,7 @@
   "scribble_book.item.minecraft.nether_star.deep": "Summoning the Wither requires 4 soul sand or soul soil in a T-shape with 3 Wither Skeleton skulls placed on top — the skulls drop with a 2.5% chance. The Wither has 300 HP, creates a large explosion on spawn, fires explosive skulls, and becomes immune to projectiles below half health. Placing a Nether Star in a beacon on top of a mineral pyramid (iron, gold, diamond, or netherite blocks) activates it.",
 
   "scribble_book.item.minecraft.recovery_compass.title": "Recovery Compass",
-  "scribble_book.item.minecraft.recovery_compass.basic": "Points toward your last death location within the same dimension. Crafted from 8 echo shards surrounding a regular compass. Useful for tracking down and recovering items after an unexpected death.",
+  "scribble_book.item.minecraft.recovery_compass.basic": "Points toward your last death location within the same dimension. Useful for tracking down and recovering items after an unexpected death.",
   "scribble_book.item.minecraft.recovery_compass.deep": "Only works in the dimension where you died — spins aimlessly in others. Echo shards are found exclusively in Ancient City chests in the Deep Dark biome. The compass keeps pointing to the last death location even after you retrieve your items, until you die again. Does not help when keepInventory is enabled. Invaluable in late game where losing enchanted gear is especially costly.",
 
   "advancements.scribble_book.explosive_story.title": "Explosive Story",

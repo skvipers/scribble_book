@@ -73,12 +73,25 @@ Entries support two formats. The legacy format is still fully supported.
     {
       "level": "deep",
       "blocks": [
-        { "type": "text", "text": "yourmod.entry.my_block.deep" }
+        { "type": "text",   "text": "yourmod.entry.my_block.deep" },
+        { "type": "recipe", "output": "yourmod:my_block", "grid": ["yourmod:part","yourmod:part","yourmod:part","yourmod:part","minecraft:iron_block","yourmod:part","yourmod:part","yourmod:part","yourmod:part"] }
       ]
     }
   ]
 }
 ```
+
+Five block types are available in the `blocks` array:
+
+| Type | Description |
+|------|-------------|
+| `text` | Paragraph text or lang key |
+| `item` | Single item icon with hover name |
+| `image` | Texture image with optional width/height/align |
+| `items` | Row of item icons with optional slot backgrounds and alignment |
+| `recipe` | 3×3 crafting grid with static item layout and output slot |
+
+See `DATAPACK.md` section 3 for the full field reference for each type.
 
 ### All entry fields
 

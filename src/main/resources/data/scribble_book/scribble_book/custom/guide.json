@@ -4,7 +4,9 @@
     {
       "level": "basic",
       "blocks": [
-        { "type": "text", "text": "scribble_book.guide.text" }
+        { "type": "text", "text": "scribble_book.guide.text" },
+        { "type": "recipe", "output": "scribble_book:scribble_book", "grid": ["minecraft:book","","","minecraft:feather","","","scribble_book:ink","",""] },
+        { "type": "recipe", "output": "scribble_book:ink", "grid": ["scribble_book:ink_bottle","minecraft:ink_sac","minecraft:ink_sac","","","","","",""] }
       ]
     }
   ],
